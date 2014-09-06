@@ -38,8 +38,9 @@
 
   <script type="text/ng-template" id="myModalContent.html">
       <div class="modal-header">
-        <span>Lalala</span>
-        <input type="text">
+        <span class="header-text" >Lägg till nya prioriteter</span>
+        <span clas="header-search-icon"></span>
+        <input class="header-search" type="text" placeholder="Sök efter prioriteter">
       </div>
       <div class="modal-body">
         <ul>
@@ -50,8 +51,8 @@
         <ul>
       </div>
       <div class="modal-footer">
-          <button class="btn btn-primary" ng-click="ok()">Lägg till prioriteringar</button>
-          <button class="btn btn-warning" ng-click="cancel()">Avbryt</button>
+          <button class="btn btn-primary btn-lagg-till-prioritet" ng-click="ok()">Lägg till prioriteringar</button>
+          <button class="btn btn-warning btn-avbryt" ng-click="cancel()">Avbryt</button>
       </div>
   </script>
 
