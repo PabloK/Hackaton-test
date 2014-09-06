@@ -12,7 +12,53 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     $scope.prios = [{name:'Pablo'},{name:'David'},{name:'Tove'},{name:'Martin'}];    
     $scope.prios = [{name: 'Närhet till dagis'},{name: 'Miljö'},{name: 'Närhet till skola'}];    
 
+    $scope.availablePrios = [
+      {name: 'Arbetsformedlingen',  categories:[],  selected: false , apikey: 'arbetsformedlingen'},
+      {name: 'Bad ute',             categories:[],  selected: false , apikey: 'bad_ute'},
+      {name: 'Bangolf',             categories:[],  selected: false , apikey: 'bangolf'},
+      {name: 'Bed and breakfast',   categories:[],  selected: false , apikey: 'bed_and_breakfast'},
+      {name: 'Bibliotek',           categories:[],  selected: false , apikey: 'bibliotek'},
+      {name: 'Bilsport',            categories:[],  selected: false , apikey: 'bilsport'},
+      {name: 'Bowling',             categories:[],  selected: false , apikey: 'bowling'},
+      {name: 'Busshallsplats',      categories:[],  selected: false , apikey: 'busshallsplats'},
+      {name: 'Camping',             categories:[],  selected: false , apikey: 'camping'},
+      {name: 'Cykelparkering',      categories:[],  selected: false , apikey: 'cykelparkering'},
+      {name: 'Cykelpumpar',         categories:[],  selected: false , apikey: 'cykelpumpar'},
+      {name: 'Domstol',             categories:[],  selected: false , apikey: 'domstol'},
+      {name: 'Fiske',               categories:[],  selected: false , apikey: 'fiske'},
+      {name: 'Flygplatser',         categories:[],  selected: false , apikey: 'flygplatser'},
+      {name: 'Föreningslokal',      categories:[],  selected: false , apikey: 'foreningslokal'},
+      {name: 'Golf',                categories:[],  selected: false , apikey: 'golf'},
+      {name: 'Hanterverk',          categories:[],  selected: false , apikey: 'hanterverk'},
+      {name: 'Hotell',              categories:[],  selected: false , apikey: 'hotell'},
+      {name: 'Idrottsanlaggningar', categories:[],  selected: false , apikey: 'idrottsanlaggningar'},
+      {name: 'Konsthall',           categories:[],  selected: false , apikey: 'konsthall'},
+      {name: 'kronofogde',          categories:[],  selected: false , apikey: 'kronofogde'},
+      {name: 'Kyrka',               categories:[],  selected: false , apikey: 'kyrka'},
+      {name: 'Köpcentrum',          categories:[],  selected: false , apikey: 'kopcentrum'},
+      {name: 'Lekplatser',          categories:[],  selected: false , apikey: 'lekplatser'},
+      {name: 'Lagenhetshotell',     categories:[],  selected: false , apikey: 'lagenhetshotell'},
+      {name: 'Museum',              categories:[],  selected: false , apikey: 'museum'},
+      {name: 'Parkomraden',         categories:[],  selected: false , apikey: 'parkomraden'},
+      {name: 'Polis',               categories:[],  selected: false , apikey: 'polis'},
+      {name: 'Resecentrum',         categories:[],  selected: false , apikey: 'resecentrum'},
+      {name: 'Ridning',             categories:[],  selected: false , apikey: 'ridning'},
+      {name: 'Simhall',             categories:[],  selected: false , apikey: 'simhall_bassang'},
+      {name: 'Sjukhus',             categories:[],  selected: false , apikey: 'sjukhus'},
+      {name: 'Skatteverket',        categories:[],  selected: false , apikey: 'skatteverket'},
+      {name: 'Slott',               categories:[],  selected: false , apikey: 'slott'},
+      {name: 'Sporthallar',         categories:[],  selected: false , apikey: 'sporthallar'},
+      {name: 'Teatrar',             categories:[],  selected: false , apikey: 'teatrar'},
+      {name: 'Turistinfo',          categories:[],  selected: false , apikey: 'turistinfo'},
+      {name: 'Universitet',         categories:[],  selected: false , apikey: 'universitet'},
+      {name: 'Vandrarhem',          categories:[],  selected: false , apikey: 'vandrarhem'},
+      {name: 'Återvinning',         categories:[],  selected: false , apikey: 'atervinning'},
+      {name: 'Rodlistade arter',    categories:[],  selected: false , apikey: 'rodlistade_arter'},
+      {name: 'Naturobjekt',         categories:[],  selected: false , apikey: 'naturobjekt'}
+    ];    
+    
     //////////////////////////////// GOOGLE MAPS /////////////////////////////////
+
     var mapOptions = {
       center: new google.maps.LatLng(58.4092038, 15.6265663),
       zoom: 13,
@@ -26,6 +72,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
           position: google.maps.ControlPosition.RIGHT_TOP
       }
     };
+    
     $scope.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     $scope.heatMapDeltaSize = 70;
     $scope.generateHeatmap = false;
@@ -92,8 +139,6 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     $scope.toggleMenu = function(element) {
       element.toggled = !element.toggled;
     };    
-    
-    $scope.items = ['item1', 'item2', 'item3'];
 
     $scope.open = function (size) {
 
@@ -102,8 +147,8 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         controller: ModalInstanceCtrl,
         size: size,
         resolve: {
-          items: function () {
-            return $scope.items;
+          availablePrios: function () {
+            return $scope.availablePrios;
           }
         }
       });
@@ -117,15 +162,14 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     
     // Directives ====================================================
     
-    var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
-
-      $scope.items = items;
+    var ModalInstanceCtrl = function ($scope, $modalInstance, availablePrios) {
+      $scope.availablePrios = availablePrios;
       $scope.selected = {
-        item: $scope.items[0]
+        availablePrios: $scope.availablePrios[0]
       };
 
       $scope.ok = function () {
-        $modalInstance.close($scope.selected.item);
+        $modalInstance.close($scope.selected.availablePrios);
       };
 
       $scope.cancel = function () {
