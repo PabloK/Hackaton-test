@@ -40,12 +40,11 @@
       <div class="modal-header">
         <span class="header-text" >Lägg till nya prioriteter</span>
         <span clas="header-search-icon"></span>
-        <input class="header-search" type="text" placeholder="Sök efter prioriteter">
+        <input class="header-search" ng-model="search" type="text" placeholder="Sök efter prioriteter">
       </div>
       <div class="modal-body">
-        <ul>
-          <li class="modalPriority" ng-repeat="prio in availablePrios">
-            <input type="checkbox" ng-model="prio.selected"/>
+        <ul class="modalPriotitylist">
+          <li class="modalPriority" ng-click="toggleSelect(prio)" ng-repeat="prio in availablePrios | filter:search" ng-class="{selected: prio.selected}">
             <span ng-bind="prio.name"></span>
           </li>
         <ul>
