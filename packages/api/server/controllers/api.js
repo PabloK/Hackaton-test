@@ -1,6 +1,13 @@
 'use strict';
 var http = require('http');
 var parseString = require('xml2js').parseString;
+var proj4js = require('proj4');
+
+proj4js.defs('EPSG:3009', '+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs <>');
+proj4js.defs('EPSG:3010', '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs <>');
+proj4js.defs('SWEREF99', '+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs <>');
+
+// +proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs <>
 /**
  * List of Apis
  */
@@ -8,7 +15,7 @@ exports.all = function(req, res) {
   
   var options = {
     host : 'kartan.linkoping.se',
-    path : '/isms/poi?service=wfs&request=getfeature&typename=' + req.param('location') + '&version=1.1.0&',
+    path : '/isms/poi?service=wfs&request=getfeature&typename=' + req.param('location') + '&version=1.1.0&srsname=EPSG:3009',
     port : 80,
     method : 'GET',
     headers: {
@@ -22,8 +29,45 @@ exports.all = function(req, res) {
       body += data;
     });
     response.on('end', function() {
-      parseString(body, function (err, body) {
-        res.send(body);
+      parseString(body, function (err, body) {        
+        var response = [];
+        response = [];
+        var objectKey = 'ms:' + req.param('location').toLowerCase();
+        var objectArray = body['wfs:FeatureCollection']['gml:featureMember'];
+        
+        // Parsing xml response to readable JSON (Hope this not breaks sometime)
+        for(var i = 0; i < objectArray.length; i += 1) {
+          var newObject = {};
+          var currentObject = objectArray[i][objectKey][0];          
+          
+          var gpsObject = currentObject['ms:msGeometry'][0]['gml:Point'];
+          newObject.coordinates = gpsObject[0]['gml:pos'][0].split(' ');                      
+          
+          newObject.objectName = currentObject['ms:NAMN'][0];
+          newObject.objectType = req.param('location');       
+
+          response.push(newObject);   
+        }        
+
+        // Perform projection to google maps format (EPSG:4326)
+        try {
+          var source = new proj4js.Proj('EPSG:3009');            
+          var dest = new proj4js.Proj('EPSG:4326');
+          
+          for(var j = 0; j < response.length; j += 1) {
+            response[j].coordinates = proj4js(source, dest, response[j].coordinates.reverse());
+            response[j].coordinates = response[j].coordinates.reverse();
+          }
+
+        } catch(e) {
+          console.log('problem with projection', e);
+          var errorObject = {};
+          errorObject.message = 'problem with projection';
+          errorObject.statusCode = 500;
+          res.send(errorObject);
+        }
+
+        res.send(response);        
       });
     });
   });
