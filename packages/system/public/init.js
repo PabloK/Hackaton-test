@@ -11,7 +11,7 @@ angular.element(document).ready(function() {
 
 // Dynamically add angular modules declared by packages
 var packageModules = [];
-for (var index in window.modules) {
+for (var index in window.modules) {	
   angular.module(window.modules[index].module, window.modules[index].angularDependencies || []);
   packageModules.push(window.modules[index].module);
 }
