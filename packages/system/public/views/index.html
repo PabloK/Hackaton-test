@@ -1,26 +1,41 @@
 <section data-ng-controller="IndexController">
-	<div id="left-menu-container" class="menu-container left-menu" ng-class="{moveleft: leftMenu.toggled}">
-        <div class="loggo">
-          <img width="125px" src="loggo.png"></img>
+  <div id="left-menu-container" class="menu-container left-menu" ng-class="{moveleft: leftMenu.toggled}">
+      <div class="loggo">
+        <img width="125px" src="loggo.png"></img>
+      </div>
+      <ul class="priority">
+        <li class="" ng-repeat="prio in prios" ng-bind="prio.name"></li>
+        <li class="center-text addprio" ng-click="open()">Lägg till nya prioriteter</li>
+      </ul>
+      <div class="menu-handle" ng-click="toggleMenu(leftMenu)">
+        <div class="menu-handle-image">
+              <span class="menu-handle-text">...</span>
         </div>
-        <ul class="priority">
-          <li class="" ng-repeat="prio in prios" ng-bind="prio.name"></li>
-          <li class="center-text addprio" ng-click="open()">Lägg till nya prioriteter</li>
-        </ul>
-        <div class="menu-handle" ng-click="toggleMenu(leftMenu)">
-          <div class="menu-handle-image">
-                <span class="menu-handle-text">...</span>
-          </div>
-		</div>
-	</div>
+      </div>
+  </div>
+
   <div id="map-canvas" class="google-maps-container"></div>  
   <div id="right-menu-container" class="menu-container right-menu" ng-class="{moveright: rightMenu.toggled}">
-  	<div class="menu-handle" ng-click="toggleMenu(rightMenu)">
+  	<h2>Din optinala lifespot är:</h2>
+    <div class="perfectadress">
+      <h3>Liljegatan 17</h3>
+      <p class="postadress">58227 linköping</p>
+    </div>
+    <ul>
+      <li class="closestPoint">
+        <h3>25<span class="metersmalltext">meter</span></h3>
+        <p>Till närmaste dagis</p>
+        <p>Lekstugan (Drottnigatan 50)</p>
+      </li>
+    </ul>
+    
+    <div class="menu-handle" ng-click="toggleMenu(rightMenu)">
   	  <div class="menu-handle-image">
         <span class="menu-handle-text">...</span>
       </div>
   	</div>
   </div>
+
   <script type="text/ng-template" id="myModalContent.html">
       <div class="modal-header">
         <span>Lalala</span>
@@ -37,4 +52,5 @@
           <button class="btn btn-warning" ng-click="cancel()">Avbryt</button>
       </div>
   </script>
+
 </section>
