@@ -22,10 +22,17 @@
 }
 .navbar .nav>li>a.brand {
 	padding-left: 20px;
-	margin-left: 0
+	margin-left: 0;
 }
 .content {
-	width: 100%
+	width: 100%;
+	height: 100%;
+}
+section {
+	height: 100%;
+}
+body, html {
+	height: 100%;
 }
 footer {
 	position: fixed;
@@ -47,7 +54,7 @@ footer p {
 .ng-valid.ng-dirty {
 	border-color: #78FA89;
 }
-.angular-google-map-container { 
-	height: 800px; 
-	width: 1024px; 
+.google-maps-container { 
+	height: 100%; 
+	width: 100%; 
 }
