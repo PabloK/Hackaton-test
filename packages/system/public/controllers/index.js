@@ -1,4 +1,4 @@
-/*global google */
+/*global google, $*/
 
 'use strict';
 
@@ -7,8 +7,9 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     
     // Quickfix to define a Resource until we get MEAN!
     var GeoData = $resource('api/geodata/:resource');    
-
-    $scope.global = Global;    
+    $scope.global = Global;
+    var sortableElement;
+    $scope.prios = [{name:'Pablo'},{name:'David'},{name:'Tove'},{name:'Martin'}];    
     $scope.prios = [{name: 'Närhet till dagis'},{name: 'Miljö'},{name: 'Närhet till skola'}];    
 
     //////////////////////////////// GOOGLE MAPS /////////////////////////////////
@@ -76,7 +77,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       });
     };
     
-    //
+    // Directives ====================================================
     
     var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
 
@@ -94,7 +95,35 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       };
     };
     
-    //
+    // Sortable function ====================================================
+    
+    $scope.add = function() {
+        $scope.prios.push('Item: '+$scope.prios.length);
+        
+        sortableElement.refresh();
+    };
+    
+    $scope.dragStart = function(e, ui) {
+        ui.item.data('start', ui.item.index());
+    };
+    
+    $scope.dragEnd = function(e, ui) {
+        var start = ui.item.data('start'),
+            end = ui.item.index();
+        
+        $scope.prios.splice(end, 0, 
+            $scope.prios.splice(start, 1)[0]);
+        
+        $scope.$apply();
+    };
+        
+    sortableElement = $('#sortable').sortable({
+        start: $scope.dragStart,
+        update: $scope.dragEnd
+    });
+
+
+    //================================================================
   }
 ]);
 
