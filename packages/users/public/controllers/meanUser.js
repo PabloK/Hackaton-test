@@ -1,4 +1,4 @@
-'use strict';
+ 'use strict';
 angular.module('mean.users')
   .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location',
     function($scope, $rootScope, $http, $location) {
