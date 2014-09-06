@@ -47,3 +47,7 @@ footer p {
 .ng-valid.ng-dirty {
 	border-color: #78FA89;
 }
+.angular-google-map-container { 
+	height: 800px; 
+	width: 1024px; 
+}
