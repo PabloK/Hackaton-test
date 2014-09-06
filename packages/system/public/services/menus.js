@@ -2,7 +2,7 @@
 
 angular.module('mean.system').factory('Menus', ['$resource',
   function($resource) {
-    return $resource('admin/menu/:name', {
+    return $resource('api/geodata/:name', {
       name: '@name',
       defaultMenu: '@defaultMenu'
     });
