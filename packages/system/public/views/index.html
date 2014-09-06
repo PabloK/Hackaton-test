@@ -42,10 +42,12 @@
         <input type="text">
       </div>
       <div class="modal-body">
-        <div class="modalPriority">
-          <input type="checkbox"/>
-          <span > Namn </span>
-        </div>
+        <ul>
+          <li class="modalPriority" ng-repeat="prio in availablePrios">
+            <input type="checkbox" ng-model="prio.selected"/>
+            <span ng-bind="prio.name"></span>
+          </li>
+        <ul>
       </div>
       <div class="modal-footer">
           <button class="btn btn-primary" ng-click="ok()">Lägg till prioriteringar</button>
