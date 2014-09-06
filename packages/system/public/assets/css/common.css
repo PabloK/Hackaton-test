@@ -58,3 +58,41 @@ footer p {
 	height: 100%; 
 	width: 100%; 
 }
+.menu-container {
+	position: absolute;
+	width: 200px;			
+	z-index: 100;	
+	background-color: #888;
+}
+.right-menu {
+	right: 0;
+	top: 45%;	
+	bottom: 70px;
+}
+.left-menu {
+	bottom: 0;
+	left: 0;
+	top: 0;
+}
+.menu-handle {
+	position: absolute;
+	height: 100px;
+	width: 20px;
+	top: 50%;	
+}
+.menu-handle-image {
+	position: relative;
+	top: -50%;
+	height: 100px;
+	width: 20px;
+	background-color: #fff;	
+}
+.left-menu > .menu-handle {
+	right: 0;
+}
+.right-menu > .menu-handle {
+	left: 0;	
+}
+.toggled {
+	width: 50px;
+}

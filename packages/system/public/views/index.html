@@ -1,3 +1,13 @@
 <section data-ng-controller="IndexController">
-  <div id="map-canvas" class="google-maps-container"></div>
+	<div id="left-menu-container" class="menu-container left-menu" ng-class="{toggled: leftMenu.toggled}">
+		<div class="menu-handle" ng-click="toggleMenu(leftMenu)">
+			<div class="menu-handle-image"></div>
+		</div>
+	</div>
+  <div id="map-canvas" class="google-maps-container"></div>  
+  <div id="left-menu-container" class="menu-container right-menu" ng-class="{toggled: rightMenu.toggled}">
+  	<div class="menu-handle" ng-click="toggleMenu(rightMenu)">
+  		<div class="menu-handle-image"></div>
+  	</div>
+  </div>
 </section>
