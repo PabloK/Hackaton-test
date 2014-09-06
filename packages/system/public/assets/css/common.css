@@ -261,3 +261,25 @@ footer p {
     padding-left:20px;
 }
 
+.modalPriorityList {
+  list-style: none;
+}
+.modalPriority {
+  display: inline-block;
+  font-family: Arial;
+  padding: 8px;
+  margin-top: 1px;
+  margin-bottom: 2px;
+  margin-left: 0.5em;
+  background-color: #FFF;
+  boarder: 1px solid #333;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 15em;
+}
+
+.selected {
+  background-color: #82D4F6 !important;
+}
