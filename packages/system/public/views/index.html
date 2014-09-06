@@ -1,26 +1,29 @@
 <section data-ng-controller="IndexController">
-	<div id="left-menu-container" class="menu-container left-menu" ng-class="{toggled: leftMenu.toggled}">
-		<div class="menu-handle" ng-click="toggleMenu(leftMenu)">
-			<div class="menu-handle-image"></div>
+	<div id="left-menu-container" class="menu-container left-menu" ng-class="{moveleft: leftMenu.toggled}">
+        <div class="loggo">
+          <img src="img/loggo.png"></img>
+        </div>
+        <ul class="priority">
+          <li class="" ng-repeat="prio in prios" ng-bind="prio.name"></li>
+          <li class="center-text addprio" ng-click="open()">Lägg till nya prioriteter</li>
+        </ul>
+        <div class="menu-handle" ng-click="toggleMenu(leftMenu)">
+          <div class="menu-handle-image">
+                <span class="menu-handle-text">...</span>
+          </div>
 		</div>
 	</div>
   <div id="map-canvas" class="google-maps-container"></div>  
-  <div id="left-menu-container" class="menu-container right-menu" ng-class="{toggled: rightMenu.toggled}">
+  <div id="right-menu-container" class="menu-container right-menu" ng-class="{moveright: rightMenu.toggled}">
   	<div class="menu-handle" ng-click="toggleMenu(rightMenu)">
-  		<div class="menu-handle-image"></div>
+  	  <div class="menu-handle-image">
+        <span class="menu-handle-text">...</span>
+      </div>
   	</div>
   </div>
   <script type="text/ng-template" id="myModalContent.html">
-      <div class="modal-header">
-          <h3 class="modal-title">I'm a modal!</h3>
-      </div>
       <div class="modal-body">
-          <ul>
-              <li ng-repeat="item in items">
-                  <a ng-click="selected.item = item">{{ item }}</a>
-              </li>
-          </ul>
-          Selected: <b>{{ selected.item }}</b>
+                  
       </div>
       <div class="modal-footer">
           <button class="btn btn-primary" ng-click="ok()">OK</button>

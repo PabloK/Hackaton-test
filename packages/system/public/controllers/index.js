@@ -5,6 +5,8 @@
 angular.module('mean.system').controller('IndexController', ['$scope', '$modal', 'Global',
   function($scope, $modal, $log, Global) {
     $scope.global = Global;
+    
+    $scope.prios = [{name: 'Närhet till dagis'},{name: 'Miljö'},{name: 'Närhet till skola'}];
 
     var mapOptions = {
       center: new google.maps.LatLng(58.4092038, 15.6265663),
@@ -80,7 +82,6 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       };
     };
     
-    $scope.open();
     //
   }
 ]);
