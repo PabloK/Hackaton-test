@@ -5,8 +5,8 @@
 angular.module('mean.system').controller('IndexController', ['$scope', '$modal', 'Global',
   function($scope, $modal, $log, Global) {
     $scope.global = Global;
-    
-    $scope.prios = [{name: 'Närhet till dagis'},{name: 'Miljö'},{name: 'Närhet till skola'}];
+    var sortableElement;
+    $scope.prios = [{name:"Pablo"},{name:"David"},{name:"Tove"},{name:"Martin"}];
 
     var mapOptions = {
       center: new google.maps.LatLng(58.4092038, 15.6265663),
@@ -64,7 +64,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       });
     };
     
-    //
+    // Directives ====================================================
     
     var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
 
@@ -82,7 +82,34 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       };
     };
     
-    //
+    // Sortable function ====================================================
+    
+    $scope.add = function() {
+        $scope.prios.push('Item: '+$scope.prios.length);
+        
+        sortableElement.refresh();
+    }
+    
+    $scope.dragStart = function(e, ui) {
+        ui.item.data('start', ui.item.index());
+    }
+    $scope.dragEnd = function(e, ui) {
+        var start = ui.item.data('start'),
+            end = ui.item.index();
+        
+        $scope.prios.splice(end, 0, 
+            $scope.prios.splice(start, 1)[0]);
+        
+        $scope.$apply();
+    }
+        
+    var sortableElement = $('#sortable').sortable({
+        start: $scope.dragStart,
+        update: $scope.dragEnd
+    });
+
+
+    //================================================================
   }
 ]);
 
