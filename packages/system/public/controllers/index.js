@@ -95,7 +95,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       
     });  
 
-    $scope.leftMenu = { toggled: true };
+    $scope.leftMenu = { toggled: false };
     $scope.rightMenu = { toggled: true };
 
     $scope.toggleMenu = function(element) {
