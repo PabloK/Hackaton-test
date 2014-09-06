@@ -22,12 +22,19 @@
   	</div>
   </div>
   <script type="text/ng-template" id="myModalContent.html">
+      <div class="modal-header">
+        <span>Lalala</span>
+        <input type="text">
+      </div>
       <div class="modal-body">
-                  
+        <div class="modalPriority">
+          <input type="checkbox"/>
+          <span > Namn </span>
+        </div>
       </div>
       <div class="modal-footer">
-          <button class="btn btn-primary" ng-click="ok()">OK</button>
-          <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+          <button class="btn btn-primary" ng-click="ok()">Lägg till prioriteringar</button>
+          <button class="btn btn-warning" ng-click="cancel()">Avbryt</button>
       </div>
   </script>
 </section>
