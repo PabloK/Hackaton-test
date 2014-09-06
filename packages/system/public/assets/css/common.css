@@ -153,3 +153,57 @@ footer p {
   margin: 2.5em auto;
   display: block;
 }
+.header-text {
+    font-family: lobster;
+    color: #272727;
+    text-align: right;
+    width: 200px;
+    font-size: 3em;
+}
+.header-search {
+    font-family: Arial;
+    position: absolute;
+    right: 30px;
+    color: #999999;
+    width: 200px;
+    border-radius: 5px;
+    font-size: 1.1em;
+    padding-left: 30px;
+    margin-top: 20px;
+    outline-color:#999999; 
+}
+.header-search-icon {
+    position: absolute;
+    right: 230px;
+    width:7px;
+    height:7px;
+    background-image: url(search_icon.png)
+}
+.modal-header {
+    background-color: #D2D2D2;
+    border-radius: 5px;  
+}
+.modal-body{
+    background-color: #D2D2D2;
+}
+.modal-footer{
+    border-radius: 5px;  
+    background-color: #D2D2D2;   
+}
+.modal-content{
+    background-color: #D2D2D2;   
+}
+.btn-lagg-till-prioritet,.btn-lagg-till-prioritet:active,.btn-lagg-till-prioritet:focus,.btn-lagg-till-prioritet:hover,.btn-lagg-till-prioritet:active:focus{
+    background-color: #999999; 
+    font-family: Arial;
+    position: absolute;
+    left: 30px;
+    border-color: #999999;
+    outline: 0;
+}
+.btn-avbryt, .btn-avbryt:active, .btn-avbryt:focus, .btn-avbryt:hover,.btn-avbryt:active:focus {
+    background-color: #FF6A64;  
+    font-family: Arial;
+    border-color: #FF6A64;
+    outline: 0;
+}

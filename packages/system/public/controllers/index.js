@@ -49,7 +49,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       var modalInstance = $modal.open({
         templateUrl: 'myModalContent.html',
         controller: ModalInstanceCtrl,
-        size: size,
+        size: 'lg',
         resolve: {
           items: function () {
             return $scope.items;
