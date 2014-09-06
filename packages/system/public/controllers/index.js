@@ -27,17 +27,55 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       }
     };
     $scope.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    var dummyHeatMapData = [
-      {location: new google.maps.LatLng(58.4101037, 15.6235664), weight: 1.0}
-      ];
+    $scope.heatMapDeltaSize = 70;
+    $scope.generateHeatmap = false;
 
-    var pointArray = new google.maps.MVCArray(dummyHeatMapData);
+    google.maps.event.addListener($scope.map, 'idle', function() {
+      var boundingBox = $scope.map.getBounds();
+      var ne = boundingBox.getNorthEast();
+      var sw = boundingBox.getSouthWest();
 
-    $scope.heatmap = new google.maps.visualization.HeatmapLayer({
-      data: pointArray
+      if($scope.generateHeatmap == true) {
+        $scope.generateHeatmap(ne, sw, function() {
+          console.log('finished');
+        });
+      }      
     });
 
-    $scope.heatmap.setMap($scope.map);
+    $scope.generateHeatmap = function(ne, sw, cb) {
+      if($scope.heatmap != null) {
+        $scope.heatmap.setMap(null);
+      }      
+
+      var largestLat = ne.k;
+      var largestLong = ne.B;
+
+      var smallestLat = sw.k;
+      var smallestLong = sw.B;
+
+      var dist = largestLat-smallestLat;
+      var deltaDist = dist / $scope.heatMapDeltaSize;
+
+      var dummyHeatMapData = [];
+      for(var latitude = smallestLat; latitude < largestLat; latitude += deltaDist) {
+        for(var longitude = smallestLong; longitude < largestLong; longitude += deltaDist) {          
+          var randomW = (Math.random()*16.0 + 1)*0.75;
+          dummyHeatMapData.push({
+            location: new google.maps.LatLng(latitude, longitude),
+            weight: randomW            
+          })
+        }        
+      }
+      var pointArray = new google.maps.MVCArray(dummyHeatMapData);
+
+      $scope.heatmap = new google.maps.visualization.HeatmapLayer({
+        data: pointArray,
+        opacity: 0.15,
+        gradient: ['#000000', '#CdCdCd', '#efefef', '#ffffff']
+      });
+      $scope.heatmap.setMap($scope.map);
+      cb();
+    };  
     //////////////////////////////////////////////////////////////////////////////
 
 
@@ -48,7 +86,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       
     });  
 
-    $scope.leftMenu = { toggled: true };
+    $scope.leftMenu = { toggled: false };
     $scope.rightMenu = { toggled: true };
 
     $scope.toggleMenu = function(element) {
