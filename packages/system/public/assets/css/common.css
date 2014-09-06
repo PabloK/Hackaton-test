@@ -122,7 +122,7 @@ footer p {
 	right: -250px;
 }
 .priority {
-  margin-top: 100px;
+  margin-top: 0;
   padding: 0;
   list-style: none;
 }
@@ -150,6 +150,6 @@ footer p {
   background-color: #999999 !important;
 }
 .loggo img {
-  margin: 5em auto;
+  margin: 2.5em auto;
   display: block;
 }
