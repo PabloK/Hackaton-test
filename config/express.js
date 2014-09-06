@@ -75,7 +75,7 @@ module.exports = function(app, passport, db) {
     });
   });
 
-  // Express/Mongo session storage
+  // Express/Mongo session storage  
   app.use(session({
     secret: config.sessionSecret,
     store: new mongoStore({
