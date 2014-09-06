@@ -2,13 +2,15 @@
 
 'use strict';
 
-angular.module('mean.system').controller('IndexController', ['$scope', '$modal', 'Global',
-  function($scope, $modal, $log, Global) {
+angular.module('mean.system').controller('IndexController', ['$scope', '$modal', '$resource', 'Global',
+  function($scope, $modal, $resource, $log, Global) {
     
-    // Variables
+    // Quickfix to define a Resource until we get MEAN!
+    var GeoData = $resource('api/geodata/:resource');    
     $scope.global = Global;
     var sortableElement;
-    $scope.prios = [{name:'Pablo'},{name:'David'},{name:'Tove'},{name:'Martin'}];
+    $scope.prios = [{name:'Pablo'},{name:'David'},{name:'Tove'},{name:'Martin'}];    
+    $scope.prios = [{name: 'Närhet till dagis'},{name: 'Miljö'},{name: 'Närhet till skola'}];    
 
     $scope.availablePrios = [
       {name: 'Arbetsformedlingen',  categories:[],  selected: false , apikey: 'arbetsformedlingen'},
@@ -55,7 +57,8 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       {name: 'Naturobjekt',         categories:[],  selected: false , apikey: 'naturobjekt'}
     ];    
     
-    // Functions
+    //////////////////////////////// GOOGLE MAPS /////////////////////////////////
+
     var mapOptions = {
       center: new google.maps.LatLng(58.4092038, 15.6265663),
       zoom: 13,
@@ -71,7 +74,6 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     };
     
     $scope.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
     var dummyHeatMapData = [
       {location: new google.maps.LatLng(58.4101037, 15.6235664), weight: 1.0}
       ];
@@ -83,6 +85,15 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     });
 
     $scope.heatmap.setMap($scope.map);
+    //////////////////////////////////////////////////////////////////////////////
+
+
+    $scope.dataList = [];
+
+    // OBS! Exempel på hur GeoData kan användas
+    GeoData.query({resource: 'bowling'}, function(response) {
+      
+    });  
 
     $scope.leftMenu = { toggled: true };
     $scope.rightMenu = { toggled: true };
