@@ -1,4 +1,4 @@
-/*global google */
+/*global google, $*/
 
 'use strict';
 
@@ -6,7 +6,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
   function($scope, $modal, $log, Global) {
     $scope.global = Global;
     var sortableElement;
-    $scope.prios = [{name:"Pablo"},{name:"David"},{name:"Tove"},{name:"Martin"}];
+    $scope.prios = [{name:'Pablo'},{name:'David'},{name:'Tove'},{name:'Martin'}];
 
     var mapOptions = {
       center: new google.maps.LatLng(58.4092038, 15.6265663),
@@ -88,11 +88,12 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         $scope.prios.push('Item: '+$scope.prios.length);
         
         sortableElement.refresh();
-    }
+    };
     
     $scope.dragStart = function(e, ui) {
         ui.item.data('start', ui.item.index());
-    }
+    };
+    
     $scope.dragEnd = function(e, ui) {
         var start = ui.item.data('start'),
             end = ui.item.index();
@@ -101,9 +102,9 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
             $scope.prios.splice(start, 1)[0]);
         
         $scope.$apply();
-    }
+    };
         
-    var sortableElement = $('#sortable').sortable({
+    sortableElement = $('#sortable').sortable({
         start: $scope.dragStart,
         update: $scope.dragEnd
     });
