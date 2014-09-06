@@ -82,7 +82,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       var ne = boundingBox.getNorthEast();
       var sw = boundingBox.getSouthWest();
 
-      if($scope.generateHeatmap == true) {
+      if($scope.generateHeatmap === true) {
         $scope.generateHeatmap(ne, sw, function() {
           console.log('finished');
         });
@@ -90,7 +90,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     });
 
     $scope.generateHeatmap = function(ne, sw, cb) {
-      if($scope.heatmap != null) {
+      if($scope.heatmap !== null) {
         $scope.heatmap.setMap(null);
       }      
 
@@ -110,7 +110,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
           dummyHeatMapData.push({
             location: new google.maps.LatLng(latitude, longitude),
             weight: randomW            
-          })
+          });
         }        
       }
       var pointArray = new google.maps.MVCArray(dummyHeatMapData);
