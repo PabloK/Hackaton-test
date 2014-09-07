@@ -157,7 +157,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     $scope.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     
     // Heatmap params //////////////
-    $scope.heatMapDeltaSize = 70;    
+    $scope.heatMapDeltaSize = window.screen.availWidth/18;    
     var coordWeight = 0.0003;
     var radius = 0.0001;
     // var baseWeight = 0.0002;
@@ -165,7 +165,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     var autoGenerate = true;
     // Heatmap params //////////////      
 
-    google.maps.event.addListener($scope.map, 'zoom_changed', function() {
+    google.maps.event.addListener($scope.map, 'idle', function() {
       var boundingBox = $scope.map.getBounds();
       var ne = boundingBox.getNorthEast();
       var sw = boundingBox.getSouthWest();
