@@ -7,6 +7,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     
     // Quickfix to define a Resource until we get MEAN!
     var GeoData = $resource('api/geodata/:resource/:prio');    
+    var GeoCoding = $resource('api/geocoding/:latitude/:longitude');    
     var sortableElement;
     
     $scope.global = Global;
@@ -43,6 +44,23 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       // OBS! Exempel på hur GeoData kan användas
     });
 
+    $scope.getGeocodingResponse = function(response) {
+      
+
+      var currentMarker = new google.maps.Marker({
+          position: myLatlng,              
+          title:'Hello World!'
+      });
+
+      $scope.currentBestMarker = {
+        marker: currentMarker,
+
+      };
+
+      $scope.currentBestMarker.marker.setMap($scope.map);
+    };
+
+    $scope.currentBestMarker = null;
     $scope.newApiData = function() {
       $scope.currentlyFetchedItems += 1;
       if($scope.currentlyFetchedItems === $scope.numFetchedItems) {                      
@@ -58,6 +76,18 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         
         $scope.generateHeatmap(ne, sw, function() {
           console.log('finished generating heatmap');          
+          console.log('best match', $scope.bestMatch);
+          
+          if($scope.currentBestMarker !== null) {
+            $scope.currentBestMarker.setMap(null);
+          }
+
+          var myLatlng = new google.maps.LatLng($scope.bestMatch[0],$scope.bestMatch[1]);
+
+          GeoCoding.get({latitude: $scope.bestMatch[0], longitude: $scope.bestMatch[1]}, $scope.getGeocodingResponse);
+
+          // TODO: Remove
+          
         });          
       }      
     };
@@ -172,7 +202,9 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     };
 
     $scope.heatmap = null;
-    
+    $scope.bestMatch = []; 
+    $scope.bestDistance = 1000000.0;
+
     $scope.generateHeatmap = function(ne, sw, cb) {      
       if($scope.heatmap !== null) {
         $scope.heatmap.setMap(null);
@@ -188,7 +220,9 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       var deltaDist = dist / $scope.heatMapDeltaSize;
 
 
-      var dummyHeatMapData = [];   
+      var dummyHeatMapData = [];  
+      $scope.bestMatch = []; 
+      $scope.bestDistance = 1000000.0;
 
       for(var latitude = smallestLat; latitude < largestLat; latitude += deltaDist) {
         for(var longitude = smallestLong; longitude < largestLong; longitude += deltaDist) {               
@@ -220,6 +254,11 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
             
             var cutoff = 1.0 - distance/coordWeight; // calculate differently
             var numberOfPos = 0;
+
+            if(distance < $scope.bestDistance) {
+              $scope.bestDistance = distance;
+              $scope.bestMatch = [latitude, longitude];
+            }
             
             if(cutoff > 0.98) {
               numberOfPos = 5;

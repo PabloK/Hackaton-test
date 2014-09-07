@@ -1,5 +1,6 @@
 'use strict';
 var http = require('http');
+var https = require('https');
 var parseString = require('xml2js').parseString;
 var proj4js = require('proj4');
 
@@ -46,7 +47,7 @@ exports.all = function(req, res) {
           newObject.objectName = currentObject['ms:NAMN'][0];
           newObject.objectType = req.param('location');       
 
-          response.push(newObject);   
+          response.push(newObject);
         }        
 
         // Perform projection to google maps format (EPSG:4326)
@@ -73,6 +74,37 @@ exports.all = function(req, res) {
 
         res.send(responseWithPrio);        
       });
+    });
+  });
+  request.on('error', function(e) {
+    console.log('Problem with request: ' + e.message);
+    console.log( e.stack );
+  });
+  request.end();
+};
+
+
+
+exports.geocoding = function(req, res) {
+  
+  var options = {
+    host : 'maps.googleapis.com',
+    path : '/maps/api/geocode/json?latlng=' + req.param('latitude') + ',' + req.param('longitude') + '&key=AIzaSyDd2IwZV-gee50pDH6RgymBJubZfsBVaNw',
+    port : 443,
+    method : 'GET',
+    headers: {
+      'accept': 'application/json;q=0.9,*/*;q=0.8'
+    }
+  };
+
+  var request = https.request(options, function(response){
+    var body = '';
+    response.on('data', function(data) {
+      body += data;
+    });
+    response.on('end', function() {
+      console.log(body);
+      res.send(body);
     });
   });
   request.on('error', function(e) {
