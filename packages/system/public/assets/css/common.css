@@ -143,6 +143,9 @@ footer p {
   border-radius: 5px;
   cursor: pointer;
 }
+.priority li:active {
+  background-color: #82D4F6;
+}
 .center-text {
   text-align: center;
 }
@@ -150,6 +153,7 @@ footer p {
   font-family: Arial;
   margin-top: 5em !important;
   color: #fff !important;
+  width: 80%; 
   background-color: #999999 !important;
 }
 .loggo img {
@@ -309,4 +313,5 @@ footer p {
     position: absolute;
     left:-25px;
     top: -25px;
+ 
 }
