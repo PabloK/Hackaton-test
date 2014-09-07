@@ -158,7 +158,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     $scope.heatMapDeltaSize = 70;    
     var coordWeight = 0.0001;
     var radius = 0.0001;
-    var baseWeight = 0.0002;
+    // var baseWeight = 0.0002;
     var autoGenerate = true;
     // Heatmap params //////////////      
 
@@ -238,19 +238,29 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
           }                    
 
           var distance = 0;          
+          var prioWeights = [9, 7, 5, 4, 3, 2, 1];
+          var prioCount = 0;
           for(var arr = 0; arr < distanceArray.length; arr += 1) {
               distance += distanceArray[arr].distance; // Accumulative distance, should be weighted?
 
               var bestIndex = distanceArray[arr].objectIndex;
-              var objectWeight = 1.0 - (arr/distanceArray.length) * baseWeight;              
+              var objectWeight = 0;
+              if(arr > prioWeights.length) {
+                prioCount += 1;
+                objectWeight = 1;
+              } else {
+                prioCount += prioWeights[arr];  
+                objectWeight = prioWeights[arr];
+              }
+              
 
               bestPoint[0] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[0] * objectWeight;
               bestPoint[1] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[1] * objectWeight;
           }
           
           
-          bestPoint[0] /= distanceArray.length;
-          bestPoint[1] /= distanceArray.length;
+          bestPoint[0] /= prioCount;
+          bestPoint[1] /= prioCount;
 
           distance = $scope.distanceBetween([latitude, longitude], bestPoint);
 
