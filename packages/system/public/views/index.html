@@ -24,8 +24,8 @@
       </div>
   	<div class="right-menu-head-text">Din optimala lifespot är:</div>
     <div class="perfectadress">
-      <div class="gata">Liljegatan 17</div>
-      <div class="postadress">58227 linköping</div>
+      <div class="gata">{{currentBestMarker.title[0]}}</div>
+      <div class="postadress">{{currentBestMarker.title[1]}}</div>
     </div>
         <div ng-repeat="prio in prios | limitTo: 3" class="closetspoint">
             <div class="pointleft">

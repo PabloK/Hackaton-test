@@ -38,24 +38,31 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     };
 
     $scope.$watch('prios', function(newArr, oldVar) {        
-
-      $scope.recalculatePrios(newArr);
-
-      // OBS! Exempel på hur GeoData kan användas
+      $scope.recalculatePrios(newArr);      
     });
 
     $scope.getGeocodingResponse = function(response) {
-      
-      
+      console.log(response);
+      var title = 'Best match';
+      var myLatlng = new google.maps.LatLng($scope.bestMatch[0],$scope.bestMatch[1]);
+
+      if(response.results.length > 0) {
+        var tempCoord = response.results[0].geometry.location;
+        
+        myLatlng = new google.maps.LatLng(tempCoord.lat,tempCoord.lng);
+        title = response.results[0].formatted_address;
+      }      
 
       var currentMarker = new google.maps.Marker({
           position: myLatlng,              
-          title:'Hello World!'
+          title: title
       });
+
+
 
       $scope.currentBestMarker = {
         marker: currentMarker,
-
+        title: title.split(',')
       };
 
       $scope.currentBestMarker.marker.setMap($scope.map);
@@ -79,13 +86,15 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
           console.log('finished generating heatmap');          
           console.log('best match', $scope.bestMatch);
           
+
           if($scope.currentBestMarker !== null) {
-            $scope.currentBestMarker.setMap(null);
+            $scope.currentBestMarker.marker.setMap(null);
           }
-
-          var myLatlng = new google.maps.LatLng($scope.bestMatch[0],$scope.bestMatch[1]);
-
-          GeoCoding.get({latitude: $scope.bestMatch[0], longitude: $scope.bestMatch[1]}, $scope.getGeocodingResponse);
+          
+          if($scope.bestMatch.length === 2) {
+            console.log($scope.bestMatch[0]);
+            GeoCoding.get({latitude: $scope.bestMatch[0], longitude: $scope.bestMatch[1]}, $scope.getGeocodingResponse);
+          }          
 
           // TODO: Remove
           
@@ -206,7 +215,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     $scope.bestMatch = []; 
     $scope.bestDistance = 1000000.0;
 
-    $scope.generateHeatmap = function(ne, sw, cb) {      
+    $scope.generateHeatmap = function(ne, sw, cb) {          
       if($scope.heatmap !== null) {
         $scope.heatmap.setMap(null);
       }      
@@ -235,13 +244,13 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
             distanceArray.push($scope.getClosestIndex([latitude, longitude], $scope.heatmapCoordinates[entityID].points));
           }                    
 
-          var distance = 0;
+          var distance = 0;          
           for(var arr = 0; arr < distanceArray.length; arr += 1) {
               distance += distanceArray[arr].distance; // Accumulative distance, should be weighted?
 
               var bestIndex = distanceArray[arr].objectIndex;
-              var objectWeight = 1.0 - (arr/distanceArray.length) * baseWeight;               
-
+              var objectWeight = 1.0 - (arr/distanceArray.length) * baseWeight;
+              
               bestPoint[0] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[0] * objectWeight;
               bestPoint[1] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[1] * objectWeight;
           }
