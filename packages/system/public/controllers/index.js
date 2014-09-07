@@ -6,7 +6,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
   function($scope, $modal, $resource, $log, $filter, Global) {
     
     // Quickfix to define a Resource until we get MEAN!
-    var GeoData = $resource('api/geodata/:resource');    
+    var GeoData = $resource('api/geodata/:resource/:prio');    
     var sortableElement;
     
     $scope.global = Global;
@@ -17,75 +17,91 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
     $scope.getResponse = function(response) {          
       var currentEntity = {};
-      currentEntity.entityType = response[0].objectType;
-      currentEntity.points = response;
-      
+
+      currentEntity.entityType = response.points[0].objectType;
+      currentEntity.points = response.points;
+      currentEntity.prio = response.prio;
+
       $scope.heatmapCoordinates.push(currentEntity);
       $scope.newApiData();      
     };
 
-    $scope.$watch('prios', function(newArr, oldVar) {        
-
+    $scope.recalculatePrios = function(newArr) {
       $scope.heatmapCoordinates = [];
       $scope.numFetchedItems = newArr.length;
       $scope.currentlyFetchedItems = 0;
 
       for(var priosID = 0; priosID < newArr.length; priosID += 1) {        
-        GeoData.query({resource: newArr[priosID].apikey}, $scope.getResponse);
+        GeoData.get({resource: newArr[priosID].apikey, prio: priosID}, $scope.getResponse);
       }
+    };
+
+    $scope.$watch('prios', function(newArr, oldVar) {        
+
+      $scope.recalculatePrios(newArr);
 
       // OBS! Exempel på hur GeoData kan användas
     });
 
     $scope.newApiData = function() {
       $scope.currentlyFetchedItems += 1;
-      if($scope.currentlyFetchedItems === $scope.numFetchedItems) {
+      if($scope.currentlyFetchedItems === $scope.numFetchedItems) {                      
+        $scope.heatmapCoordinates.sort(function(a, b) {
+          return (a.prio < b.prio) ? -1 : 1;
+        });
+
         console.log($scope.heatmapCoordinates);
-        // Should redraw heatmap
+
+        var boundingBox = $scope.map.getBounds();
+        var ne = boundingBox.getNorthEast();
+        var sw = boundingBox.getSouthWest();
+        
+        $scope.generateHeatmap(ne, sw, function() {
+          console.log('finished generating heatmap');          
+        });          
       }      
     };
 
     // {name: 'Hantverk',            categories:['fritidsintresse', 'kultur','fritidsaktivitet'],  selected: false , apikey: 'hantverk'},
     $scope.availablePrios = [
-      {name: 'Arbetsformedlingen',  categories:[],  selected: false , apikey: 'arbetsformedlingen'},
-      {name: 'Bad ute',             categories:['fritidsintresse','fritidsaktivitet','natur', 'friluftsliv', 'utflykt', 'sommaraktivitet', 'barnlek', 'barnvänligt'],  selected: false , apikey: 'bad_ute'},
-      {name: 'Bangolf',             categories:['äventyrsgolf', 'fritidsintresse', 'sommaraktivitet', 'nöje','fritidsaktivitet'],  selected: false , apikey: 'bangolf'},
-      {name: 'Bed and breakfast',   categories:['boende', 'gäster', 'övernattning', 'vandrarhem', 'hotell'],  selected: false , apikey: 'bed_and_breakfast'},
-      {name: 'Bibliotek',           categories:['kultur', 'utbildning', 'böcker', 'fritidsintresse'],  selected: false , apikey: 'bibliotek'},
-      {name: 'Bilsport',            categories:['fritidsintresse','fritidsaktivitet', 'sport'],  selected: false , apikey: 'bilsport'},
-      {name: 'Bowling',             categories:['fritidsintresse', 'nöje','fritidsaktivitet'],  selected: false , apikey: 'bowling'},
-      {name: 'Busshållsplats',      categories:['kommunikation', 'transport', 'buss'],  selected: false , apikey: 'busshallsplats'},
-      {name: 'Camping',             categories:['boende', 'gäster', 'frilufsliv', 'övernattning'],  selected: false , apikey: 'camping'},
-      {name: 'Cykelparkering',      categories:['cykel', 'parkering', 'miljövänligt'],  selected: false , apikey: 'cykelparkering'},
-      {name: 'Cykelpumpar',         categories:['cykel', 'miljövänligt'],  selected: false , apikey: 'cykelpumpar'},
-      {name: 'Domstol',             categories:[],  selected: false , apikey: 'domstol'},
-      {name: 'Fiske',               categories:['frilufsliv', 'fiska', 'fritidsintresse','fritidsaktivitet'],  selected: false , apikey: 'fiske'},
-      {name: 'Flygplatser',         categories:['kommunikation', 'transport', 'flyg'],  selected: false , apikey: 'flygplatser'},
-      {name: 'Föreningslokal',      categories:['fritid', 'förening'],  selected: false , apikey: 'foreningslokal'},
-      {name: 'Golf',                categories:['fritidsintresse', 'nöje','fritidsaktivitet', 'sport','hälsa'],  selected: false , apikey: 'golf'},
-      {name: 'Hotell',              categories:['boende', 'gäster', 'övernattning', 'vandrarhem', 'hotell'],  selected: false , apikey: 'hotell'},
-      {name: 'Idrottsanläggningar', categories:['sport','fritidsintresse', 'nöje','fritidsaktivitet','hälsa'],  selected: false , apikey: 'idrottsanlaggningar'},
-      {name: 'Konsthall',           categories:['fritidsintresse', 'kultur','fritidsaktivitet'],  selected: false , apikey: 'konsthall'},
-      {name: 'Kyrka',               categories:['religion', 'kultur','gudstjänst'],  selected: false , apikey: 'kyrka'},
-      {name: 'Köpcentrum',          categories:['shopping', 'galleria', 'hobby', 'nöje'],  selected: false , apikey: 'kopcentrum'},
-      {name: 'Lägenhetshotell',     categories:[],  selected: false , apikey: 'lagenhetshotell'},
-      {name: 'Museum',              categories:[],  selected: false , apikey: 'museum'},
-      {name: 'Parkomraden',         categories:[],  selected: false , apikey: 'parkomraden'},
-      {name: 'Polis',               categories:[],  selected: false , apikey: 'polis'},
-      {name: 'Resecentrum',         categories:[],  selected: false , apikey: 'resecentrum'},
-      {name: 'Ridning',             categories:['fritidsintresse'],  selected: false , apikey: 'ridning'},
-      {name: 'Simhall',             categories:['fritidsintresse'],  selected: false , apikey: 'simhall_bassang'},
-      {name: 'Sjukhus',             categories:[],  selected: false , apikey: 'sjukhus'},
-      {name: 'Skatteverket',        categories:[],  selected: false , apikey: 'skatteverket'},
-      {name: 'Slott',               categories:[],  selected: false , apikey: 'slott'},
-      {name: 'Sporthallar',         categories:[],  selected: false , apikey: 'sporthallar'},
-      {name: 'Teatrar',             categories:[],  selected: false , apikey: 'teatrar'},
-      {name: 'Turistinfo',          categories:[],  selected: false , apikey: 'turistinfo'},
-      {name: 'Universitet',         categories:[],  selected: false , apikey: 'universitet'},
-      {name: 'Vandrarhem',          categories:[],  selected: false , apikey: 'vandrarhem'},
-      {name: 'Återvinning',         categories:[],  selected: false , apikey: 'atervinning'},
-      {name: 'Rödlistade arter',    categories:['fritidsintresse',],  selected: false , apikey: 'rodlistade_arter'},
-      {name: 'Naturobjekt',         categories:['miljö'],  selected: false , apikey: 'naturobjekt'}
+      {name: 'Arbetsförmedlingen', img:'comu_icon.png', categories:[],  selected: false , apikey: 'arbetsformedlingen'},
+      {name: 'Bad ute',            img:'park_icon.png', categories:['fritidsintresse','fritidsaktivitet','natur', 'friluftsliv', 'utflykt', 'sommaraktivitet', 'barnlek', 'barnvänligt'],  selected: false , apikey: 'bad_ute'},
+      {name: 'Bangolf',            img:'hobby_icon.png', categories:['äventyrsgolf', 'fritidsintresse', 'sommaraktivitet', 'nöje','fritidsaktivitet'],  selected: false , apikey: 'bangolf'},
+      {name: 'Bed and breakfast',  img:'house_icon.png', categories:['boende', 'gäster', 'övernattning', 'vandrarhem', 'hotell'],  selected: false , apikey: 'bed_and_breakfast'},
+      {name: 'Bibliotek',          img:'lib_icon.png', categories:['kultur', 'utbildning', 'böcker', 'fritidsintresse'],  selected: false , apikey: 'bibliotek'},
+      {name: 'Bilsport',           img:'hobby_icon.png', categories:['fritidsintresse','fritidsaktivitet', 'sport'],  selected: false , apikey: 'bilsport'},
+      {name: 'Bowling',            img:'bowling_icon.png', categories:['fritidsintresse', 'nöje','fritidsaktivitet'],  selected: false , apikey: 'bowling'},
+      {name: 'Busshållsplats',     img:'travel_icon.png', categories:['kommunikation', 'transport', 'buss'],  selected: false , apikey: 'busshallsplats'},
+      {name: 'Camping',            img:'park_icon.png', categories:['boende', 'gäster', 'frilufsliv', 'övernattning'],  selected: false , apikey: 'camping'},
+      {name: 'Cykelparkering',     img:'bike_icon.png', categories:['cykel', 'parkering', 'miljövänligt'],  selected: false , apikey: 'cykelparkering'},
+      {name: 'Cykelpumpar',        img:'bike_icon.png', categories:['cykel', 'miljövänligt'],  selected: false , apikey: 'cykelpumpar'},
+      {name: 'Domstol',            img:'comu_icon.png', categories:[],  selected: false , apikey: 'domstol'},
+      {name: 'Fiske',              img:'hobby_icon.png', categories:['frilufsliv', 'fiska', 'fritidsintresse','fritidsaktivitet'],  selected: false , apikey: 'fiske'},
+      {name: 'Flygplatser',        img:'traveL_icon.png', categories:['kommunikation', 'transport', 'flyg'],  selected: false , apikey: 'flygplatser'},
+      {name: 'Föreningslokal',     img:'friend_icon.png', categories:['fritid', 'förening'],  selected: false , apikey: 'foreningslokal'},
+      {name: 'Golf',               img:'hobby_icon.png', categories:['fritidsintresse', 'nöje','fritidsaktivitet', 'sport','hälsa'],  selected: false , apikey: 'golf'},
+      {name: 'Hotell',             img:'house_icon.png', categories:['boende', 'gäster', 'övernattning', 'vandrarhem', 'hotell'],  selected: false , apikey: 'hotell'},
+      {name: 'Idrottsanläggningar',img:'gym_icon.png', categories:['sport','fritidsintresse', 'nöje','fritidsaktivitet','hälsa'],  selected: false , apikey: 'idrottsanlaggningar'},
+      {name: 'Konsthall',          img:'culture_icon.png', categories:['fritidsintresse', 'kultur','fritidsaktivitet'],  selected: false , apikey: 'konsthall'},
+      {name: 'Kyrka',              img:'church_icon.png', categories:['religion', 'kultur','gudstjänst'],  selected: false , apikey: 'kyrka'},
+      {name: 'Köpcentrum',         img:'food_icon.png', categories:['shopping', 'galleria', 'hobby', 'nöje'],  selected: false , apikey: 'kopcentrum'},
+      {name: 'Lägenhetshotell',    img:'house_icon.png', categories:[],  selected: false , apikey: 'lagenhetshotell'},
+      {name: 'Museum',             img:'culture_icon.png', categories:[],  selected: false , apikey: 'museum'},
+      {name: 'Parkområden',        img:'park_icon.png', categories:[],  selected: false , apikey: 'parkomraden'},
+      {name: 'Polis',              img:'comu_icon.png', categories:[],  selected: false , apikey: 'polis'},
+      {name: 'Resecentrum',        img:'travel_icon.png', categories:[],  selected: false , apikey: 'resecentrum'},
+      {name: 'Ridning',            img:'hobby_icon.png', categories:['fritidsintresse'],  selected: false , apikey: 'ridning'},
+      {name: 'Simhall',            img:'gym_icon.png', categories:['fritidsintresse'],  selected: false , apikey: 'simhall_bassang'},
+      {name: 'Sjukhus',            img:'hos_icon.png', categories:[],  selected: false , apikey: 'sjukhus'},
+      {name: 'Slott',              img:'culture_icon.png', categories:[],  selected: false , apikey: 'slott'},
+      {name: 'Sporthallar',        img:'gym_icon.png', categories:[],  selected: false , apikey: 'sporthallar'},
+      {name: 'Teatrar',            img:'culture_icon.png', categories:[],  selected: false , apikey: 'teatrar'},
+      {name: 'Turistinfo',         img:'comu_icon.png', categories:[],  selected: false , apikey: 'turistinfo'},
+      {name: 'Universitet',        img:'uni_icon.png', categories:[],  selected: false , apikey: 'universitet'},
+      {name: 'Vandrarhem',         img:'house_icon.png', categories:[],  selected: false , apikey: 'vandrarhem'},
+      {name: 'Återvinning',        img:'recycle_icon.png', categories:[],  selected: false , apikey: 'atervinning'},
+      {name: 'Rödlistade arter',   img:'park_icon.png', categories:['fritidsintresse',],  selected: false , apikey: 'rodlistade_arter'},
+      {name: 'Naturobjekt',        img:'park_icon.png', categories:['miljö'],  selected: false , apikey: 'naturobjekt'}
     ];    
     
     //////////////////////////////// GOOGLE MAPS /////////////////////////////////
@@ -110,6 +126,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     $scope.heatMapDeltaSize = 70;    
     var coordWeight = 0.0001;
     var radius = 0.0001;
+    var baseWeight = 0.0002;
     var autoGenerate = true;
     // Heatmap params //////////////      
 
@@ -128,6 +145,10 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       
     });
 
+    $scope.distanceBetween = function(pointA, pointB) {
+      return (pointA[0]-pointB[0])*(pointA[0]-pointB[0]) + (pointA[1]-pointB[1])*(pointA[1]-pointB[1]);
+    };
+
     $scope.getClosestIndex = function(point, pointArr) {
       var bestIndex;
       var closestDistance = 10000000000.0;
@@ -140,8 +161,10 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         }
       }
 
+
+
       var returnObject = {
-        index: p,
+        objectIndex: bestIndex,
         distance: closestDistance
       };
 
@@ -164,22 +187,34 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       var dist = largestLat-smallestLat;
       var deltaDist = dist / $scope.heatMapDeltaSize;
 
+
       var dummyHeatMapData = [];   
 
       for(var latitude = smallestLat; latitude < largestLat; latitude += deltaDist) {
         for(var longitude = smallestLong; longitude < largestLong; longitude += deltaDist) {               
 
-          var distanceArray = [];  
+          var distanceArray = [];
+          var bestPoint = [0,0];
 
-          for(var entityID = 0; entityID < $scope.heatmapCoordinates.length; entityID += 1) {              
+          for(var entityID = 0; entityID < $scope.heatmapCoordinates.length; entityID += 1) {                
             distanceArray.push($scope.getClosestIndex([latitude, longitude], $scope.heatmapCoordinates[entityID].points));
           }                    
 
           var distance = 0;
-          for(var arr = 0; arr < distanceArray.length; arr += 1) {              
+          for(var arr = 0; arr < distanceArray.length; arr += 1) {
               distance += distanceArray[arr].distance; // Accumulative distance, should be weighted?
+
+              var bestIndex = distanceArray[arr].objectIndex;
+              var objectWeight = 1.0 - (arr/distanceArray.length) * baseWeight;               
+
+              bestPoint[0] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[0] * objectWeight;
+              bestPoint[1] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[1] * objectWeight;
           }
           
+          bestPoint[0] /= distanceArray.length;
+          bestPoint[1] /= distanceArray.length;
+
+          distance = $scope.distanceBetween([latitude, longitude], bestPoint);
 
           if(distance < coordWeight && distance > 0) {            
             
@@ -297,6 +332,8 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
             $scope.prios.splice(start, 1)[0]);
         
         $scope.$apply();
+
+        $scope.recalculatePrios($scope.prios);
     };
         
     sortableElement = $('#sortable').sortable({
