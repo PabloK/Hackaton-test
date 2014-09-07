@@ -77,3 +77,45 @@ exports.all = function(req, res) {
   });
   request.end();
 };
+
+exports.vardstallen = function(req, res) {
+  var options = {
+    host : 'api.offentligdata.minavardkontakter.se',
+    path : '/orgmaster-hsa/v1/hsaObjects?countyCode=05',
+    port : 80,
+    method : 'GET',
+    headers: {
+      'accept': 'application/json;q=0.9,*/*;q=0.8'
+    }
+  };
+
+  var request = http.request(options, function(response){
+    var body = '';
+    response.on('data', function(data) {
+      body += data;
+    });
+    response.on('end', function() {
+      body = JSON.parse(body);
+      var points = [];
+      for(var vard = 0; vard < body.length-1; vard += 1) {
+        if (body[vard].geoLocation && body[vard].geoLocation.longitude) {
+        points.push({
+                      cordinate: [body[vard].geoLocation.longitude, body[vard].geoLocation. latitude],
+                      objectType: 'vardstallen',
+                      objectName: 'Tjoffsan'
+                     });
+        }
+      }
+      var resp = {
+          prio: req.param('prio'),
+          points: points
+      };
+      res.send(resp);
+    });
+  });
+  request.on('error', function(e) {
+    console.log('Problem with request: ' + e.message);
+    console.log( e.stack );
+  });
+  request.end();
+};
