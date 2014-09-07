@@ -156,13 +156,14 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     
     // Heatmap params //////////////
     $scope.heatMapDeltaSize = 70;    
-    var coordWeight = 0.0001;
+    var coordWeight = 0.0003;
     var radius = 0.0001;
     // var baseWeight = 0.0002;
+    var heatmapRadius = 15;
     var autoGenerate = true;
     // Heatmap params //////////////      
 
-    google.maps.event.addListener($scope.map, 'idle', function() {
+    google.maps.event.addListener($scope.map, 'zoom_changed', function() {
       var boundingBox = $scope.map.getBounds();
       var ne = boundingBox.getNorthEast();
       var sw = boundingBox.getSouthWest();
@@ -238,7 +239,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
           }                    
 
           var distance = 0;          
-          var prioWeights = [9, 7, 5, 4, 3, 2, 1];
+          var prioWeights = [12, 8, 6, 4, 3, 2, 1];
           var prioCount = 0;
           for(var arr = 0; arr < distanceArray.length; arr += 1) {
               distance += distanceArray[arr].distance; // Accumulative distance, should be weighted?
@@ -274,14 +275,14 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
               $scope.bestMatch = [latitude, longitude];
             }
             
-            if(cutoff > 0.98) {
-              numberOfPos = 5;
+            if(cutoff > 0.99) {
+              numberOfPos = 3;
             } else if(cutoff > 0.96) { 
-              numberOfPos = 4; 
-            } else if(cutoff > 0.94) { 
-              numberOfPos = 3; 
-            } else if(cutoff > 0.92) { 
               numberOfPos = 2; 
+            } else if(cutoff > 0.94) { 
+              numberOfPos = 1; 
+            } else if(cutoff > 0.92) { 
+              numberOfPos = 1; 
             } else if(cutoff > 0.90) { 
               numberOfPos = 1; 
             }
@@ -294,7 +295,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
               dummyHeatMapData.push({
                 location: new google.maps.LatLng(x, y),
-                weight: 1.0                
+                weight: 0.2                
               });
             }          
             
@@ -304,11 +305,13 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       
       var pointArray = new google.maps.MVCArray(dummyHeatMapData);
 
+
+      // var colorArray = ['#FF6A64', '#FF7F72', '#FF827D', '#FF8F8A', '#FFACA8', '#FABEC7', '#FBCDD4', '#D9CFF9', '#C3DAF2', '#A9CBEB', '#76AADD', '#428AD0', '#27649F', '#205283', 'rgba(0,0,0,0)'];
       $scope.heatmap = new google.maps.visualization.HeatmapLayer({
         data: pointArray,
         gradient: ['rgba(0,0,0,0)', '#205283', '#82D4F6', '#FF6A64'],        
         dissipating: true,
-        radius: 15
+        radius: heatmapRadius
       });
       $scope.heatmap.setMap($scope.map);
       cb();
