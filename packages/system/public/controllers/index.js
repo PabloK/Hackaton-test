@@ -46,6 +46,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
     $scope.getGeocodingResponse = function(response) {
       
+      
 
       var currentMarker = new google.maps.Marker({
           position: myLatlng,              
