@@ -34,21 +34,27 @@ exports.all = function(req, res) {
         var response = [];
         response = [];
         var objectKey = 'ms:' + req.param('location').toLowerCase();
-        var objectArray = body['wfs:FeatureCollection']['gml:featureMember'];
-        
-        // Parsing xml response to readable JSON (Hope this not breaks sometime)
-        for(var i = 0; i < objectArray.length; i += 1) {
-          var newObject = {};
-          var currentObject = objectArray[i][objectKey][0];          
+        try {          
+          var objectArray = body['wfs:FeatureCollection']['gml:featureMember'];
           
-          var gpsObject = currentObject['ms:msGeometry'][0]['gml:Point'];
-          newObject.coordinates = gpsObject[0]['gml:pos'][0].split(' ');                      
-          
-          newObject.objectName = currentObject['ms:NAMN'][0];
-          newObject.objectType = req.param('location');       
+          // Parsing xml response to readable JSON (Hope this not breaks sometime)
+          for(var i = 0; i < objectArray.length; i += 1) {
+            var newObject = {};
+            var currentObject = objectArray[i][objectKey][0];          
+            
+            var gpsObject = currentObject['ms:msGeometry'][0]['gml:Point'];
+            newObject.coordinates = gpsObject[0]['gml:pos'][0].split(' ');                      
+            
+            newObject.objectName = currentObject['ms:NAMN'][0];
+            newObject.objectType = req.param('location');       
 
-          response.push(newObject);
-        }        
+            response.push(newObject);
+          }    
+
+        } catch(e) {
+          res.send({});
+          return;
+        }    
 
         // Perform projection to google maps format (EPSG:4326)
         try {
@@ -66,6 +72,7 @@ exports.all = function(req, res) {
           errorObject.message = 'problem with projection';
           errorObject.statusCode = 500;
           res.send(errorObject);
+          return;
         }
 
         var responseWithPrio = {};
