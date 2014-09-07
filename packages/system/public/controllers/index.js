@@ -101,6 +101,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       {name: 'Vandrarhem',         img:'house_icon.png', categories:[],  selected: false , apikey: 'vandrarhem'},
       {name: 'Återvinning',        img:'recycle_icon.png', categories:[],  selected: false , apikey: 'atervinning'},
       {name: 'Rödlistade arter',   img:'park_icon.png', categories:['fritidsintresse',],  selected: false , apikey: 'rodlistade_arter'},
+      {name: 'Vårdställen',        img:'hos_icon.png', categories:[],  selected: false , apikey: 'vardstallen'},
       {name: 'Naturobjekt',        img:'park_icon.png', categories:['miljö'],  selected: false , apikey: 'naturobjekt'}
     ];    
     
