@@ -133,7 +133,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       {name: 'Återvinning',        img:'recycle_icon.png', categories:[],  selected: false , apikey: 'atervinning'},
       //{name: 'Rödlistade arter',   img:'park_icon.png', categories:['fritidsintresse',],  selected: false , apikey: 'rodlistade_arter'},
       {name: 'Vårdställen',        img:'hos_icon.png', categories:[],  selected: false , apikey: 'vardstallen'},
-      {name: 'Naturobjekt',        img:'park_icon.png', categories:['miljö'],  selected: false , apikey: 'naturobjekt'}
+      //{name: 'Naturobjekt',        img:'park_icon.png', categories:['miljö'],  selected: false , apikey: 'naturobjekt'}
     ];    
     
     //////////////////////////////// GOOGLE MAPS /////////////////////////////////
@@ -329,6 +329,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       });
 
       modalInstance.result.then(function (selectedItem) {
+        $scope.rightMenu = { toggled: false };
         $scope.prios = $filter('filter')($filter('orderBy')(selectedItem, 'selected'), true);
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
