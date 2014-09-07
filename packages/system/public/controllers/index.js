@@ -6,7 +6,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
   function($scope, $modal, $resource, $log, $filter, Global) {
     
     // Quickfix to define a Resource until we get MEAN!
-    var GeoData = $resource('api/geodata/:resource');    
+    var GeoData = $resource('api/geodata/:resource/:prio');    
     var sortableElement;
     
     $scope.global = Global;
@@ -17,31 +17,48 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
     $scope.getResponse = function(response) {          
       var currentEntity = {};
-      currentEntity.entityType = response[0].objectType;
-      currentEntity.points = response;
-      
+
+      currentEntity.entityType = response.points[0].objectType;
+      currentEntity.points = response.points;
+      currentEntity.prio = response.prio;
+
       $scope.heatmapCoordinates.push(currentEntity);
       $scope.newApiData();      
     };
 
-    $scope.$watch('prios', function(newArr, oldVar) {        
-
+    $scope.recalculatePrios = function(newArr) {
       $scope.heatmapCoordinates = [];
       $scope.numFetchedItems = newArr.length;
       $scope.currentlyFetchedItems = 0;
 
       for(var priosID = 0; priosID < newArr.length; priosID += 1) {        
-        GeoData.query({resource: newArr[priosID].apikey}, $scope.getResponse);
+        GeoData.get({resource: newArr[priosID].apikey, prio: priosID}, $scope.getResponse);
       }
+    };
+
+    $scope.$watch('prios', function(newArr, oldVar) {        
+
+      $scope.recalculatePrios(newArr);
 
       // OBS! Exempel på hur GeoData kan användas
     });
 
     $scope.newApiData = function() {
       $scope.currentlyFetchedItems += 1;
-      if($scope.currentlyFetchedItems === $scope.numFetchedItems) {
+      if($scope.currentlyFetchedItems === $scope.numFetchedItems) {                      
+        $scope.heatmapCoordinates.sort(function(a, b) {
+          return (a.prio < b.prio) ? -1 : 1;
+        });
+
         console.log($scope.heatmapCoordinates);
-        // Should redraw heatmap
+
+        var boundingBox = $scope.map.getBounds();
+        var ne = boundingBox.getNorthEast();
+        var sw = boundingBox.getSouthWest();
+        
+        $scope.generateHeatmap(ne, sw, function() {
+          console.log('finished generating heatmap');          
+        });          
       }      
     };
 
@@ -109,6 +126,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     $scope.heatMapDeltaSize = 70;    
     var coordWeight = 0.0001;
     var radius = 0.0001;
+    var baseWeight = 0.0002;
     var autoGenerate = true;
     // Heatmap params //////////////      
 
@@ -127,6 +145,10 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       
     });
 
+    $scope.distanceBetween = function(pointA, pointB) {
+      return (pointA[0]-pointB[0])*(pointA[0]-pointB[0]) + (pointA[1]-pointB[1])*(pointA[1]-pointB[1]);
+    };
+
     $scope.getClosestIndex = function(point, pointArr) {
       var bestIndex;
       var closestDistance = 10000000000.0;
@@ -139,8 +161,10 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         }
       }
 
+
+
       var returnObject = {
-        index: p,
+        objectIndex: bestIndex,
         distance: closestDistance
       };
 
@@ -169,17 +193,28 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       for(var latitude = smallestLat; latitude < largestLat; latitude += deltaDist) {
         for(var longitude = smallestLong; longitude < largestLong; longitude += deltaDist) {               
 
-          var distanceArray = [];  
+          var distanceArray = [];
+          var bestPoint = [0,0];
 
-          for(var entityID = 0; entityID < $scope.heatmapCoordinates.length; entityID += 1) {              
+          for(var entityID = 0; entityID < $scope.heatmapCoordinates.length; entityID += 1) {                
             distanceArray.push($scope.getClosestIndex([latitude, longitude], $scope.heatmapCoordinates[entityID].points));
           }                    
 
           var distance = 0;
-          for(var arr = 0; arr < distanceArray.length; arr += 1) {              
+          for(var arr = 0; arr < distanceArray.length; arr += 1) {
               distance += distanceArray[arr].distance; // Accumulative distance, should be weighted?
+
+              var bestIndex = distanceArray[arr].objectIndex;
+              var objectWeight = 1.0 - (arr/distanceArray.length) * baseWeight;               
+
+              bestPoint[0] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[0] * objectWeight;
+              bestPoint[1] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[1] * objectWeight;
           }
           
+          bestPoint[0] /= distanceArray.length;
+          bestPoint[1] /= distanceArray.length;
+
+          distance = $scope.distanceBetween([latitude, longitude], bestPoint);
 
           if(distance < coordWeight && distance > 0) {            
             
@@ -297,6 +332,8 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
             $scope.prios.splice(start, 1)[0]);
         
         $scope.$apply();
+
+        $scope.recalculatePrios($scope.prios);
     };
         
     sortableElement = $('#sortable').sortable({
