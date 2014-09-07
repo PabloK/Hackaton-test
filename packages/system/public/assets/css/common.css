@@ -143,6 +143,9 @@ footer p {
   border-radius: 5px;
   cursor: pointer;
 }
+.priority li:active {
+  background-color: #82D4F6;
+}
 .center-text {
   text-align: center;
 }
