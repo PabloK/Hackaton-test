@@ -104,7 +104,7 @@ exports.vardstallen = function(req, res) {
       for(var vard = 0; vard < body.length-1; vard += 1) {
         if (body[vard].geoLocation && body[vard].geoLocation.longitude) {
         points.push({
-                      cordinate: [body[vard].geoLocation. latitude, body[vard].geoLocation.longitude],
+                      coordinates: [body[vard].geoLocation. latitude, body[vard].geoLocation.longitude],
                       objectType: 'vardstallen',
                       objectName: 'Tjoffsan'
                      });

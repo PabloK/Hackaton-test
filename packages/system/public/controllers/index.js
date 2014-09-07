@@ -17,7 +17,6 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
     $scope.getResponse = function(response) {          
       var currentEntity = {};
-
       currentEntity.entityType = response.points[0].objectType;
       currentEntity.points = response.points;
       currentEntity.prio = response.prio;
@@ -37,7 +36,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     };
 
     $scope.$watch('prios', function(newArr, oldVar) {        
-
+        
       $scope.recalculatePrios(newArr);
 
       // OBS! Exempel på hur GeoData kan användas
@@ -49,8 +48,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         $scope.heatmapCoordinates.sort(function(a, b) {
           return (a.prio < b.prio) ? -1 : 1;
         });
-
-        console.log($scope.heatmapCoordinates);
+        //console.log($scope.heatmapCoordinates);
 
         var boundingBox = $scope.map.getBounds();
         var ne = boundingBox.getNorthEast();
@@ -58,7 +56,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         
         $scope.generateHeatmap(ne, sw, function() {
           console.log('finished generating heatmap');          
-        });          
+        });
       }      
     };
 
@@ -174,7 +172,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
     $scope.heatmap = null;
     
-    $scope.generateHeatmap = function(ne, sw, cb) {      
+    $scope.generateHeatmap = function(ne, sw, cb) {
       if($scope.heatmap !== null) {
         $scope.heatmap.setMap(null);
       }      
@@ -207,10 +205,10 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
               var bestIndex = distanceArray[arr].objectIndex;
               var objectWeight = 1.0 - (arr/distanceArray.length) * baseWeight;               
-
               bestPoint[0] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[0] * objectWeight;
               bestPoint[1] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[1] * objectWeight;
           }
+          
           
           bestPoint[0] /= distanceArray.length;
           bestPoint[1] /= distanceArray.length;
@@ -250,7 +248,6 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         }        
       }      
       
-
       var pointArray = new google.maps.MVCArray(dummyHeatMapData);
 
       $scope.heatmap = new google.maps.visualization.HeatmapLayer({
