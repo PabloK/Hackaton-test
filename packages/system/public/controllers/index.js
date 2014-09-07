@@ -52,9 +52,11 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         title = response.results[0].formatted_address;
       }      
 
+      var image = 'poi_icon.png';
       var currentMarker = new google.maps.Marker({
           position: myLatlng,              
-          title: title
+          title: title,
+          icon: image
       });
 
 
