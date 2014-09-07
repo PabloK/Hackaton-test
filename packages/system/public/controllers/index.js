@@ -2,48 +2,47 @@
 
 'use strict';
 
-angular.module('mean.system').controller('IndexController', ['$scope', '$modal', '$resource', 'Global',
-  function($scope, $modal, $resource, $log, Global) {
+angular.module('mean.system').controller('IndexController', ['$scope', '$modal', '$resource', '$log', '$filter', 'Global',
+  function($scope, $modal, $resource, $log, $filter, Global) {
     
     // Quickfix to define a Resource until we get MEAN!
     var GeoData = $resource('api/geodata/:resource');    
-    $scope.global = Global;
     var sortableElement;
-    $scope.prios = [{name:'Pablo'},{name:'David'},{name:'Tove'},{name:'Martin'}];    
-    $scope.prios = [{name: 'Närhet till dagis'},{name: 'Miljö'},{name: 'Närhet till skola'}];    
+    
+    $scope.global = Global;
+    $scope.prios = [];    
 
     $scope.availablePrios = [
       {name: 'Arbetsformedlingen',  categories:[],  selected: false , apikey: 'arbetsformedlingen'},
-      {name: 'Bad ute',             categories:[],  selected: false , apikey: 'bad_ute'},
-      {name: 'Bangolf',             categories:[],  selected: false , apikey: 'bangolf'},
-      {name: 'Bed and breakfast',   categories:[],  selected: false , apikey: 'bed_and_breakfast'},
-      {name: 'Bibliotek',           categories:[],  selected: false , apikey: 'bibliotek'},
-      {name: 'Bilsport',            categories:[],  selected: false , apikey: 'bilsport'},
-      {name: 'Bowling',             categories:[],  selected: false , apikey: 'bowling'},
-      {name: 'Busshallsplats',      categories:[],  selected: false , apikey: 'busshallsplats'},
-      {name: 'Camping',             categories:[],  selected: false , apikey: 'camping'},
-      {name: 'Cykelparkering',      categories:[],  selected: false , apikey: 'cykelparkering'},
-      {name: 'Cykelpumpar',         categories:[],  selected: false , apikey: 'cykelpumpar'},
+      {name: 'Bad ute',             categories:['fritidsintresse','fritidsaktivitet','natur', 'friluftsliv', 'utflykt', 'sommaraktivitet', 'barnlek', 'barnvänligt'],  selected: false , apikey: 'bad_ute'},
+      {name: 'Bangolf',             categories:['äventyrsgolf', 'fritidsintresse', 'sommaraktivitet', 'nöje','fritidsaktivitet'],  selected: false , apikey: 'bangolf'},
+      {name: 'Bed and breakfast',   categories:['boende', 'gäster', 'övernattning', 'vandrarhem', 'hotell'],  selected: false , apikey: 'bed_and_breakfast'},
+      {name: 'Bibliotek',           categories:['kultur', 'utbildning', 'böcker', 'fritidsintresse'],  selected: false , apikey: 'bibliotek'},
+      {name: 'Bilsport',            categories:['fritidsintresse','fritidsaktivitet', 'sport'],  selected: false , apikey: 'bilsport'},
+      {name: 'Bowling',             categories:['fritidsintresse', 'nöje','fritidsaktivitet'],  selected: false , apikey: 'bowling'},
+      {name: 'Busshållsplats',      categories:['kommunikation', 'transport', 'buss'],  selected: false , apikey: 'busshallsplats'},
+      {name: 'Camping',             categories:['boende', 'gäster', 'frilufsliv', 'övernattning'],  selected: false , apikey: 'camping'},
+      {name: 'Cykelparkering',      categories:['cykel', 'parkering', 'miljövänligt'],  selected: false , apikey: 'cykelparkering'},
+      {name: 'Cykelpumpar',         categories:['cykel', 'miljövänligt'],  selected: false , apikey: 'cykelpumpar'},
       {name: 'Domstol',             categories:[],  selected: false , apikey: 'domstol'},
-      {name: 'Fiske',               categories:[],  selected: false , apikey: 'fiske'},
-      {name: 'Flygplatser',         categories:[],  selected: false , apikey: 'flygplatser'},
-      {name: 'Föreningslokal',      categories:[],  selected: false , apikey: 'foreningslokal'},
-      {name: 'Golf',                categories:[],  selected: false , apikey: 'golf'},
-      {name: 'Hanterverk',          categories:[],  selected: false , apikey: 'hanterverk'},
-      {name: 'Hotell',              categories:[],  selected: false , apikey: 'hotell'},
-      {name: 'Idrottsanlaggningar', categories:[],  selected: false , apikey: 'idrottsanlaggningar'},
-      {name: 'Konsthall',           categories:[],  selected: false , apikey: 'konsthall'},
-      {name: 'kronofogde',          categories:[],  selected: false , apikey: 'kronofogde'},
-      {name: 'Kyrka',               categories:[],  selected: false , apikey: 'kyrka'},
-      {name: 'Köpcentrum',          categories:[],  selected: false , apikey: 'kopcentrum'},
-      {name: 'Lekplatser',          categories:[],  selected: false , apikey: 'lekplatser'},
-      {name: 'Lagenhetshotell',     categories:[],  selected: false , apikey: 'lagenhetshotell'},
+      {name: 'Fiske',               categories:['frilufsliv', 'fiska', 'fritidsintresse','fritidsaktivitet'],  selected: false , apikey: 'fiske'},
+      {name: 'Flygplatser',         categories:['kommunikation', 'transport', 'flyg'],  selected: false , apikey: 'flygplatser'},
+      {name: 'Föreningslokal',      categories:['fritid', 'förening'],  selected: false , apikey: 'foreningslokal'},
+      {name: 'Golf',                categories:['fritidsintresse', 'nöje','fritidsaktivitet', 'sport','hälsa'],  selected: false , apikey: 'golf'},
+      {name: 'Hantverk',            categories:['fritidsintresse', 'kultur','fritidsaktivitet'],  selected: false , apikey: 'hanterverk'},
+      {name: 'Hotell',              categories:['boende', 'gäster', 'övernattning', 'vandrarhem', 'hotell'],  selected: false , apikey: 'hotell'},
+      {name: 'Idrottsanläggningar', categories:['sport','fritidsintresse', 'nöje','fritidsaktivitet','hälsa'],  selected: false , apikey: 'idrottsanlaggningar'},
+      {name: 'Konsthall',           categories:['fritidsintresse', 'kultur','fritidsaktivitet'],  selected: false , apikey: 'konsthall'},
+      {name: 'Kyrka',               categories:['religion', 'kultur','gudstjänst'],  selected: false , apikey: 'kyrka'},
+      {name: 'Köpcentrum',          categories:['shopping', 'galleria', 'hobby', 'nöje'],  selected: false , apikey: 'kopcentrum'},
+      {name: 'Lekplatser',          categories:['barn', 'barnlek'],  selected: false , apikey: 'lekplatser'},
+      {name: 'Lägenhetshotell',     categories:[],  selected: false , apikey: 'lagenhetshotell'},
       {name: 'Museum',              categories:[],  selected: false , apikey: 'museum'},
       {name: 'Parkomraden',         categories:[],  selected: false , apikey: 'parkomraden'},
       {name: 'Polis',               categories:[],  selected: false , apikey: 'polis'},
       {name: 'Resecentrum',         categories:[],  selected: false , apikey: 'resecentrum'},
-      {name: 'Ridning',             categories:[],  selected: false , apikey: 'ridning'},
-      {name: 'Simhall',             categories:[],  selected: false , apikey: 'simhall_bassang'},
+      {name: 'Ridning',             categories:['fritidsintresse'],  selected: false , apikey: 'ridning'},
+      {name: 'Simhall',             categories:['fritidsintresse'],  selected: false , apikey: 'simhall_bassang'},
       {name: 'Sjukhus',             categories:[],  selected: false , apikey: 'sjukhus'},
       {name: 'Skatteverket',        categories:[],  selected: false , apikey: 'skatteverket'},
       {name: 'Slott',               categories:[],  selected: false , apikey: 'slott'},
@@ -53,8 +52,8 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       {name: 'Universitet',         categories:[],  selected: false , apikey: 'universitet'},
       {name: 'Vandrarhem',          categories:[],  selected: false , apikey: 'vandrarhem'},
       {name: 'Återvinning',         categories:[],  selected: false , apikey: 'atervinning'},
-      {name: 'Rodlistade arter',    categories:[],  selected: false , apikey: 'rodlistade_arter'},
-      {name: 'Naturobjekt',         categories:[],  selected: false , apikey: 'naturobjekt'}
+      {name: 'Rödlistade arter',    categories:['fritidsintresse',],  selected: false , apikey: 'rodlistade_arter'},
+      {name: 'Naturobjekt',         categories:['miljö'],  selected: false , apikey: 'naturobjekt'}
     ];    
     
     //////////////////////////////// GOOGLE MAPS /////////////////////////////////
@@ -249,7 +248,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       });
 
       modalInstance.result.then(function (selectedItem) {
-        $scope.selected = selectedItem;
+        $scope.prios = $filter('filter')($filter('orderBy')(selectedItem, 'selected'), true);
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
@@ -258,17 +257,19 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     // Directives ====================================================
     
     var ModalInstanceCtrl = function ($scope, $modalInstance, availablePrios) {
+      $scope.myFilter = '';
       $scope.availablePrios = availablePrios;
-      $scope.selected = {
-        availablePrios: $scope.availablePrios[0]
-      };
-
+      
       $scope.ok = function () {
-        $modalInstance.close($scope.selected.availablePrios);
+        $modalInstance.close($scope.availablePrios);
       };
 
       $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
+      };
+      
+      $scope.toggleSelect = function(item){
+        item.selected = !item.selected;
       };
     };
     
