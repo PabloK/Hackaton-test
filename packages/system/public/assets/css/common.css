@@ -87,11 +87,18 @@ footer p {
 	left: 0;
 	top: 0;
 }
-.menu-handle {
+.menu-handle{
 	position: absolute;
 	height: 100px;
 	width: 15px;
 	top: 50%;	
+}
+.menu-handle-left {
+	position: absolute;
+	height: 100px;
+	width: 15px;
+	top: 50%;	
+    left:0;
 }
 .menu-handle-image {
 	position: relative;
@@ -118,10 +125,10 @@ footer p {
 	left: 0;	
 }
 .moveleft {
-	left: -250px;
+	left: -270px;
 }
 .moveright {
-	right: -250px;
+	right: -320px;
 }
 .priority {
   margin-top: 0;
@@ -151,7 +158,7 @@ footer p {
 }
 .addprio {
   font-family: Arial;
-  margin-top: 5em !important;
+  margin-top: 3em !important;
   color: #fff !important;
   width: 80%; 
   background-color: #999999 !important;
@@ -315,11 +322,11 @@ footer p {
 }
 .pointleft{
     position: absolute;
-    left:25px;
+    left:35px;
 }
 .pointright{
     position: absolute;
-    right: 110px;   
+    left: 50px;   
 }
 .closetspoint{
     margin-top: 20px;
@@ -345,6 +352,14 @@ footer p {
     font-size: 2.0em;
     position: relative;
     left: 40px;
+}
+.prio-text-welcome{
+    font-family: lobster;
+    color: #272727;
+    text-align: left;
+    font-size: 2.0em;
+    position: relative;
+    left: 75px;
 }
 .ng-valid.ng-dirty{
     border: 0 !important;
