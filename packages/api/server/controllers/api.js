@@ -67,7 +67,11 @@ exports.all = function(req, res) {
           res.send(errorObject);
         }
 
-        res.send(response);        
+        var responseWithPrio = {};
+        responseWithPrio.prio = req.param('prio');
+        responseWithPrio.points = response;
+
+        res.send(responseWithPrio);        
       });
     });
   });
