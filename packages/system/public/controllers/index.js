@@ -7,6 +7,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     
     // Quickfix to define a Resource until we get MEAN!
     var GeoData = $resource('api/geodata/:resource/:prio');    
+    var GeoCoding = $resource('api/geocoding/:latitude/:longitude');    
     var sortableElement;
     
     $scope.global = Global;
@@ -17,7 +18,6 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
     $scope.getResponse = function(response) {          
       var currentEntity = {};
-
       currentEntity.entityType = response.points[0].objectType;
       currentEntity.points = response.points;
       currentEntity.prio = response.prio;
@@ -37,28 +37,59 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     };
 
     $scope.$watch('prios', function(newArr, oldVar) {        
-
-      $scope.recalculatePrios(newArr);
-
-      // OBS! Exempel på hur GeoData kan användas
+      $scope.recalculatePrios(newArr);      
     });
 
+    $scope.getGeocodingResponse = function(response) {
+      console.log(response);
+      var title = 'Best match';
+      var myLatlng = new google.maps.LatLng($scope.bestMatch[0],$scope.bestMatch[1]);
+
+      if(response.results.length > 0) {
+        var tempCoord = response.results[0].geometry.location;
+        
+        myLatlng = new google.maps.LatLng(tempCoord.lat,tempCoord.lng);
+        title = response.results[0].formatted_address;
+      }      
+
+      var currentMarker = new google.maps.Marker({
+          position: myLatlng,              
+          title: title
+      });
+
+
+
+      $scope.currentBestMarker = {
+        marker: currentMarker,
+        title: title.split(',')
+      };
+
+      $scope.currentBestMarker.marker.setMap($scope.map);
+    };
+
+    $scope.currentBestMarker = null;
     $scope.newApiData = function() {
       $scope.currentlyFetchedItems += 1;
       if($scope.currentlyFetchedItems === $scope.numFetchedItems) {                      
         $scope.heatmapCoordinates.sort(function(a, b) {
           return (a.prio < b.prio) ? -1 : 1;
         });
-
-        console.log($scope.heatmapCoordinates);
+        //console.log($scope.heatmapCoordinates);
 
         var boundingBox = $scope.map.getBounds();
         var ne = boundingBox.getNorthEast();
         var sw = boundingBox.getSouthWest();
         
         $scope.generateHeatmap(ne, sw, function() {
-          console.log('finished generating heatmap');          
-        });          
+          if($scope.currentBestMarker !== null) {
+            $scope.currentBestMarker.marker.setMap(null);
+          }
+          
+          if($scope.bestMatch.length === 2) {            
+            GeoCoding.get({latitude: $scope.bestMatch[0], longitude: $scope.bestMatch[1]}, $scope.getGeocodingResponse);
+          }          
+          
+        });
       }      
     };
 
@@ -71,13 +102,13 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       {name: 'Bibliotek',          img:'lib_icon.png', categories:['kultur', 'utbildning', 'böcker', 'fritidsintresse'],  selected: false , apikey: 'bibliotek'},
       {name: 'Bilsport',           img:'hobby_icon.png', categories:['fritidsintresse','fritidsaktivitet', 'sport'],  selected: false , apikey: 'bilsport'},
       {name: 'Bowling',            img:'bowling_icon.png', categories:['fritidsintresse', 'nöje','fritidsaktivitet'],  selected: false , apikey: 'bowling'},
-      {name: 'Busshållsplats',     img:'travel_icon.png', categories:['kommunikation', 'transport', 'buss'],  selected: false , apikey: 'busshallsplats'},
+      //{name: 'Busshållsplats',     img:'travel_icon.png', categories:['kommunikation', 'transport', 'buss'],  selected: false , apikey: 'busshallsplats'},
       {name: 'Camping',            img:'park_icon.png', categories:['boende', 'gäster', 'frilufsliv', 'övernattning'],  selected: false , apikey: 'camping'},
       {name: 'Cykelparkering',     img:'bike_icon.png', categories:['cykel', 'parkering', 'miljövänligt'],  selected: false , apikey: 'cykelparkering'},
       {name: 'Cykelpumpar',        img:'bike_icon.png', categories:['cykel', 'miljövänligt'],  selected: false , apikey: 'cykelpumpar'},
       {name: 'Domstol',            img:'comu_icon.png', categories:[],  selected: false , apikey: 'domstol'},
       {name: 'Fiske',              img:'hobby_icon.png', categories:['frilufsliv', 'fiska', 'fritidsintresse','fritidsaktivitet'],  selected: false , apikey: 'fiske'},
-      {name: 'Flygplatser',        img:'traveL_icon.png', categories:['kommunikation', 'transport', 'flyg'],  selected: false , apikey: 'flygplatser'},
+      {name: 'Flygplatser',        img:'travel_icon.png', categories:['kommunikation', 'transport', 'flyg'],  selected: false , apikey: 'flygplatser'},
       {name: 'Föreningslokal',     img:'friend_icon.png', categories:['fritid', 'förening'],  selected: false , apikey: 'foreningslokal'},
       {name: 'Golf',               img:'hobby_icon.png', categories:['fritidsintresse', 'nöje','fritidsaktivitet', 'sport','hälsa'],  selected: false , apikey: 'golf'},
       {name: 'Hotell',             img:'house_icon.png', categories:['boende', 'gäster', 'övernattning', 'vandrarhem', 'hotell'],  selected: false , apikey: 'hotell'},
@@ -100,8 +131,9 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       {name: 'Universitet',        img:'uni_icon.png', categories:[],  selected: false , apikey: 'universitet'},
       {name: 'Vandrarhem',         img:'house_icon.png', categories:[],  selected: false , apikey: 'vandrarhem'},
       {name: 'Återvinning',        img:'recycle_icon.png', categories:[],  selected: false , apikey: 'atervinning'},
-      {name: 'Rödlistade arter',   img:'park_icon.png', categories:['fritidsintresse',],  selected: false , apikey: 'rodlistade_arter'},
-      {name: 'Naturobjekt',        img:'park_icon.png', categories:['miljö'],  selected: false , apikey: 'naturobjekt'}
+      //{name: 'Rödlistade arter',   img:'park_icon.png', categories:['fritidsintresse',],  selected: false , apikey: 'rodlistade_arter'},
+      {name: 'Vårdställen',        img:'hos_icon.png', categories:[],  selected: false , apikey: 'vardstallen'},
+      //{name: 'Naturobjekt',        img:'park_icon.png', categories:['miljö'],  selected: false , apikey: 'naturobjekt'}
     ];    
     
     //////////////////////////////// GOOGLE MAPS /////////////////////////////////
@@ -124,13 +156,14 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     
     // Heatmap params //////////////
     $scope.heatMapDeltaSize = 70;    
-    var coordWeight = 0.0001;
+    var coordWeight = 0.0003;
     var radius = 0.0001;
-    var baseWeight = 0.0002;
+    // var baseWeight = 0.0002;
+    var heatmapRadius = 15;
     var autoGenerate = true;
     // Heatmap params //////////////      
 
-    google.maps.event.addListener($scope.map, 'idle', function() {
+    google.maps.event.addListener($scope.map, 'zoom_changed', function() {
       var boundingBox = $scope.map.getBounds();
       var ne = boundingBox.getNorthEast();
       var sw = boundingBox.getSouthWest();
@@ -172,8 +205,11 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     };
 
     $scope.heatmap = null;
+
+    $scope.bestMatch = []; 
+    $scope.bestDistance = 1000000.0;
     
-    $scope.generateHeatmap = function(ne, sw, cb) {      
+    $scope.generateHeatmap = function(ne, sw, cb) {
       if($scope.heatmap !== null) {
         $scope.heatmap.setMap(null);
       }      
@@ -188,7 +224,9 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       var deltaDist = dist / $scope.heatMapDeltaSize;
 
 
-      var dummyHeatMapData = [];   
+      var dummyHeatMapData = [];  
+      $scope.bestMatch = []; 
+      $scope.bestDistance = 1000000.0;
 
       for(var latitude = smallestLat; latitude < largestLat; latitude += deltaDist) {
         for(var longitude = smallestLong; longitude < largestLong; longitude += deltaDist) {               
@@ -200,19 +238,30 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
             distanceArray.push($scope.getClosestIndex([latitude, longitude], $scope.heatmapCoordinates[entityID].points));
           }                    
 
-          var distance = 0;
+          var distance = 0;          
+          var prioWeights = [12, 8, 6, 4, 3, 2, 1];
+          var prioCount = 0;
           for(var arr = 0; arr < distanceArray.length; arr += 1) {
               distance += distanceArray[arr].distance; // Accumulative distance, should be weighted?
 
               var bestIndex = distanceArray[arr].objectIndex;
-              var objectWeight = 1.0 - (arr/distanceArray.length) * baseWeight;               
+              var objectWeight = 0;
+              if(arr > prioWeights.length) {
+                prioCount += 1;
+                objectWeight = 1;
+              } else {
+                prioCount += prioWeights[arr];  
+                objectWeight = prioWeights[arr];
+              }
+              
 
               bestPoint[0] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[0] * objectWeight;
               bestPoint[1] += $scope.heatmapCoordinates[arr].points[bestIndex].coordinates[1] * objectWeight;
           }
           
-          bestPoint[0] /= distanceArray.length;
-          bestPoint[1] /= distanceArray.length;
+          
+          bestPoint[0] /= prioCount;
+          bestPoint[1] /= prioCount;
 
           distance = $scope.distanceBetween([latitude, longitude], bestPoint);
 
@@ -220,15 +269,20 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
             
             var cutoff = 1.0 - distance/coordWeight; // calculate differently
             var numberOfPos = 0;
+
+            if(distance < $scope.bestDistance) {
+              $scope.bestDistance = distance;
+              $scope.bestMatch = [latitude, longitude];
+            }
             
-            if(cutoff > 0.98) {
-              numberOfPos = 5;
+            if(cutoff > 0.99) {
+              numberOfPos = 3;
             } else if(cutoff > 0.96) { 
-              numberOfPos = 4; 
-            } else if(cutoff > 0.94) { 
-              numberOfPos = 3; 
-            } else if(cutoff > 0.92) { 
               numberOfPos = 2; 
+            } else if(cutoff > 0.94) { 
+              numberOfPos = 1; 
+            } else if(cutoff > 0.92) { 
+              numberOfPos = 1; 
             } else if(cutoff > 0.90) { 
               numberOfPos = 1; 
             }
@@ -241,7 +295,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
               dummyHeatMapData.push({
                 location: new google.maps.LatLng(x, y),
-                weight: 1.0                
+                weight: 0.2                
               });
             }          
             
@@ -249,14 +303,15 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
         }        
       }      
       
-
       var pointArray = new google.maps.MVCArray(dummyHeatMapData);
 
+
+      // var colorArray = ['#FF6A64', '#FF7F72', '#FF827D', '#FF8F8A', '#FFACA8', '#FABEC7', '#FBCDD4', '#D9CFF9', '#C3DAF2', '#A9CBEB', '#76AADD', '#428AD0', '#27649F', '#205283', 'rgba(0,0,0,0)'];
       $scope.heatmap = new google.maps.visualization.HeatmapLayer({
         data: pointArray,
         gradient: ['rgba(0,0,0,0)', '#205283', '#82D4F6', '#FF6A64'],        
         dissipating: true,
-        radius: 15
+        radius: heatmapRadius
       });
       $scope.heatmap.setMap($scope.map);
       cb();
@@ -287,6 +342,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       });
 
       modalInstance.result.then(function (selectedItem) {
+        $scope.rightMenu = { toggled: false };
         $scope.prios = $filter('filter')($filter('orderBy')(selectedItem, 'selected'), true);
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
@@ -344,6 +400,5 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
     //================================================================
   }
-                                                             
 ]);
 
