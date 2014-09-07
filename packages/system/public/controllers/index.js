@@ -311,7 +311,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       // var colorArray = ['#FF6A64', '#FF7F72', '#FF827D', '#FF8F8A', '#FFACA8', '#FABEC7', '#FBCDD4', '#D9CFF9', '#C3DAF2', '#A9CBEB', '#76AADD', '#428AD0', '#27649F', '#205283', 'rgba(0,0,0,0)'];
       $scope.heatmap = new google.maps.visualization.HeatmapLayer({
         data: pointArray,
-        gradient: ['rgba(0,0,0,0)', '#205283', '#82D4F6', '#FF6A64'],        
+        gradient: ['rgba(0,0,0,0)', '#205283', '#82D4F6', '#E59400'],        
         dissipating: true,
         radius: heatmapRadius
       });
