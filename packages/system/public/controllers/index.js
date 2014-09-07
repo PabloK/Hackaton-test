@@ -2,8 +2,8 @@
 
 'use strict';
 
-angular.module('mean.system').controller('IndexController', ['$scope', '$modal', '$resource', 'Global',
-  function($scope, $modal, $resource, $log, Global) {
+angular.module('mean.system').controller('IndexController', ['$scope', '$modal', '$resource', '$log', '$filter', 'Global',
+  function($scope, $modal, $resource, $log, $filter, Global) {
     
     // Quickfix to define a Resource until we get MEAN!
     var GeoData = $resource('api/geodata/:resource');    
@@ -154,7 +154,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       });
 
       modalInstance.result.then(function (selectedItem) {
-        $scope.selected = selectedItem;
+        $scope.prios = $filter('filter')($filter('orderBy')(selectedItem, 'selected'), true);
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
@@ -165,12 +165,9 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
     var ModalInstanceCtrl = function ($scope, $modalInstance, availablePrios) {
       $scope.myFilter = '';
       $scope.availablePrios = availablePrios;
-      $scope.selected = {
-        availablePrios: $scope.availablePrios[0]
-      };
-
+      
       $scope.ok = function () {
-        $modalInstance.close($scope.selected.availablePrios);
+        $modalInstance.close($scope.availablePrios);
       };
 
       $scope.cancel = function () {

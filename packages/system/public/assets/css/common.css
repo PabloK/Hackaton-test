@@ -150,6 +150,7 @@ footer p {
   font-family: Arial;
   margin-top: 5em !important;
   color: #fff !important;
+  width: 80%; 
   background-color: #999999 !important;
 }
 .loggo img {
