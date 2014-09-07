@@ -28,10 +28,12 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
 
     $scope.recalculatePrios = function(newArr) {
       $scope.heatmapCoordinates = [];
-      $scope.numFetchedItems = newArr.length;
+      $scope.numFetchedItems = (newArr.length > 5) ? 5 : newArr.length;
       $scope.currentlyFetchedItems = 0;
 
-      for(var priosID = 0; priosID < newArr.length; priosID += 1) {        
+      var maxLength = (newArr.length > 5) ? 5 : newArr.length;
+      
+      for(var priosID = 0; priosID < maxLength; priosID += 1) {        
         GeoData.get({resource: newArr[priosID].apikey, prio: priosID}, $scope.getResponse);
       }
     };
@@ -40,8 +42,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       $scope.recalculatePrios(newArr);      
     });
 
-    $scope.getGeocodingResponse = function(response) {
-      console.log(response);
+    $scope.getGeocodingResponse = function(response) {      
       var title = 'Best match';
       var myLatlng = new google.maps.LatLng($scope.bestMatch[0],$scope.bestMatch[1]);
 
@@ -75,8 +76,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       if($scope.currentlyFetchedItems === $scope.numFetchedItems) {                      
         $scope.heatmapCoordinates.sort(function(a, b) {
           return (a.prio < b.prio) ? -1 : 1;
-        });
-        //console.log($scope.heatmapCoordinates);
+        });        
 
         var boundingBox = $scope.map.getBounds();
         var ne = boundingBox.getNorthEast();
