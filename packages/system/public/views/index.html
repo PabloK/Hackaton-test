@@ -16,26 +16,59 @@
 
   <div id="map-canvas" class="google-maps-container"></div>  
   <div id="right-menu-container" class="menu-container right-menu" ng-class="{moveright: rightMenu.toggled}">
-  	<h2>Din optinala lifespot är:</h2>
+      <div class="lovecorner">
+        <img width="53px" src="lovecorner.png"></img>
+      </div>
+  	<div class="right-menu-head-text">Din optimala lifespot är:</div>
     <div class="perfectadress">
       <h3>Liljegatan 17</h3>
       <p class="postadress">58227 linköping</p>
     </div>
-    <ul>
-      <li class="closestPoint">
-        <h3>25<span class="metersmalltext">meter</span></h3>
-        <p>Till närmaste dagis</p>
-        <p>Lekstugan (Drottnigatan 50)</p>
-      </li>
-    </ul>
-    
+        <div class="closetspoint">
+            <div class="pointleft">
+               <img width="30px" src="cafe_icon.png" ></img> 
+            </div>
+            <div class="pointright">
+              <div>
+                  <span class="meterbigtext">25</span> 
+                  <span class="metersmalltext">meter</span>
+              </div>
+              <div class="additionaltext">Till närmaste dagis</div>
+              <div class="additionaltextadress" >Lekstugan (Drottnigatan 50)</div>
+            </div>
+      </div>
+      <div class="closetspoint">
+            <div class="pointleft">
+               <img width="30px" src="cafe_icon.png" ></img> 
+            </div>
+            <div class="pointright">
+              <div>
+                  <span class="meterbigtext">25</span> 
+                  <span class="metersmalltext">meter</span>
+              </div>
+              <div class="additionaltext">Till närmaste dagis</div>
+              <div class="additionaltextadress" >Lekstugan (Drottnigatan 50)</div>
+            </div>
+      </div>
+      <div class="closetspoint">
+            <div class="pointleft">
+               <img width="30px" src="cafe_icon.png" ></img> 
+            </div>
+            <div class="pointright">
+              <div>
+                  <span class="meterbigtext">25</span> 
+                  <span class="metersmalltext">meter</span>
+              </div>
+              <div class="additionaltext">Till närmaste dagis</div>
+              <div class="additionaltextadress" >Lekstugan (Drottnigatan 50)</div>
+            </div>
+      </div>
     <div class="menu-handle" ng-click="toggleMenu(rightMenu)">
   	  <div class="menu-handle-image">
         <span class="menu-handle-text">...</span>
       </div>
   	</div>
   </div>
-
   <script type="text/ng-template" id="myModalContent.html">
       <div class="modal-header">
         <span class="header-text" >Lägg till nya prioriteter</span>

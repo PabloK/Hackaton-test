@@ -45,6 +45,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       }      
     };
 
+    // {name: 'Hantverk',            categories:['fritidsintresse', 'kultur','fritidsaktivitet'],  selected: false , apikey: 'hantverk'},
     $scope.availablePrios = [
       {name: 'Arbetsformedlingen',  categories:[],  selected: false , apikey: 'arbetsformedlingen'},
       {name: 'Bad ute',             categories:['fritidsintresse','fritidsaktivitet','natur', 'friluftsliv', 'utflykt', 'sommaraktivitet', 'barnlek', 'barnvänligt'],  selected: false , apikey: 'bad_ute'},
@@ -62,13 +63,11 @@ angular.module('mean.system').controller('IndexController', ['$scope', '$modal',
       {name: 'Flygplatser',         categories:['kommunikation', 'transport', 'flyg'],  selected: false , apikey: 'flygplatser'},
       {name: 'Föreningslokal',      categories:['fritid', 'förening'],  selected: false , apikey: 'foreningslokal'},
       {name: 'Golf',                categories:['fritidsintresse', 'nöje','fritidsaktivitet', 'sport','hälsa'],  selected: false , apikey: 'golf'},
-      {name: 'Hantverk',            categories:['fritidsintresse', 'kultur','fritidsaktivitet'],  selected: false , apikey: 'hantverk'},
       {name: 'Hotell',              categories:['boende', 'gäster', 'övernattning', 'vandrarhem', 'hotell'],  selected: false , apikey: 'hotell'},
       {name: 'Idrottsanläggningar', categories:['sport','fritidsintresse', 'nöje','fritidsaktivitet','hälsa'],  selected: false , apikey: 'idrottsanlaggningar'},
       {name: 'Konsthall',           categories:['fritidsintresse', 'kultur','fritidsaktivitet'],  selected: false , apikey: 'konsthall'},
       {name: 'Kyrka',               categories:['religion', 'kultur','gudstjänst'],  selected: false , apikey: 'kyrka'},
       {name: 'Köpcentrum',          categories:['shopping', 'galleria', 'hobby', 'nöje'],  selected: false , apikey: 'kopcentrum'},
-      {name: 'Lekplatser',          categories:['barn', 'barnlek'],  selected: false , apikey: 'lekplatser'},
       {name: 'Lägenhetshotell',     categories:[],  selected: false , apikey: 'lagenhetshotell'},
       {name: 'Museum',              categories:[],  selected: false , apikey: 'museum'},
       {name: 'Parkomraden',         categories:[],  selected: false , apikey: 'parkomraden'},
